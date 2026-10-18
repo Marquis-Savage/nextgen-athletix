@@ -20,16 +20,19 @@
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex flex-col justify-between" x-data="appData()">
 
-  <!-- TOP NAVIGATION BAR WITH LOGO -->
+  <!-- TOP NAVIGATION BAR WITH OFFICIAL BRAND LOGO -->
   <header class="border-b border-slate-200 bg-white/95 backdrop-blur sticky top-0 z-50 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       
-      <!-- Logo Branding -->
+      <!-- Official Logo Branding -->
       <div class="flex items-center space-x-3 cursor-pointer" @click="setView('home')">
-        <div class="bg-gradient-to-br from-indigo-700 via-indigo-800 to-slate-900 text-amber-400 p-2.5 rounded-2xl border border-indigo-500/30 shadow-md flex items-center justify-center">
-          <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
-            <path d="M12 2L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-3zm0 4a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm-3 7h6v2H9v-2zm-1 3h8v2H8v-2z"/>
-          </svg>
+        <div class="h-11 w-11 rounded-xl bg-slate-100 border border-slate-200/80 p-1 flex items-center justify-center shadow-sm overflow-hidden bg-white">
+          <img 
+            src="NGAwht.jpg" 
+            alt="NextGen Athletics Logo" 
+            class="h-full w-full object-contain"
+            onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'bg-indigo-600 text-white font-black text-xs p-2 rounded-lg\'>NGA</div>';"
+          />
         </div>
         <div>
           <div class="flex items-center space-x-1.5">
