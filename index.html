@@ -737,6 +737,12 @@
                   </div>
                 </div>
               </template>
+
+              <template x-if="pendingApplicants.length === 0">
+                <div class="text-center py-8 text-slate-400 text-xs italic">
+                  No pending VP applications at this time.
+                </div>
+              </template>
             </div>
           </div>
         </div>
@@ -791,9 +797,7 @@
           { id: 'VP-1', initials: 'MV', name: 'Coach Marcus Vance', title: 'Speed Specialist', org: 'Apex Speed Academy', specialty: 'WR / DB Speed', submissionCount: 42, publicEmail: 'mvance@apexspeed.com', publicPhone: '(602) 555-0192', isContactRestricted: false }
         ],
 
-        pendingApplicants: [
-          { id: 101, name: 'Coach Dave Williams', role: 'Varsity Head Coach', org: 'Chandler High School', email: 'dave@chandlerfootball.org' }
-        ],
+        pendingApplicants: [],
 
         athletes: [
           {
@@ -842,7 +846,24 @@
                 role: profile.role,
                 org: profile.title_or_org
               };
+              if (profile.role === 'admin') {
+                this.loadPendingApplicants();
+              }
             }
+          }
+        },
+
+        async loadPendingApplicants() {
+          if (!window.db) return;
+          const { data, error } = await window.db.from('users').select('*').eq('is_approved', false);
+          if (!error && data) {
+            this.pendingApplicants = data.map(u => ({
+              id: u.id,
+              name: u.full_name,
+              role: u.role.toUpperCase(),
+              org: u.title_or_org || 'Independent',
+              email: u.email
+            }));
           }
         },
 
@@ -872,7 +893,7 @@
           if (error) {
             alert('Registration error: ' + error.message);
           } else if (data.user) {
-            await window.db.from('users').insert({
+            const { error: profileError } = await window.db.from('users').insert({
               id: data.user.id,
               full_name: this.authForm.fullName,
               email: this.authForm.email,
@@ -880,8 +901,14 @@
               is_approved: false,
               title_or_org: this.authForm.orgName
             });
-            alert('Registration submitted! You will be able to publish metrics once an administrator approves your account.');
-            this.showAuthModal = false;
+
+            if (profileError) {
+              console.error('Profile insertion error:', profileError.message);
+              alert('Account created, but profile record failed: ' + profileError.message);
+            } else {
+              alert('Registration submitted successfully! You will be able to publish metrics once an administrator approves your account.');
+              this.showAuthModal = false;
+            }
           }
         },
 
@@ -894,6 +921,9 @@
 
         setView(view) {
           this.currentView = view;
+          if (view === 'admin' && this.currentUser && this.currentUser.role === 'admin') {
+            this.loadPendingApplicants();
+          }
           setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 50);
         },
 
@@ -936,12 +966,26 @@
           return athlete.categories.reduce((acc, cat) => acc + cat.ratings.length, 0);
         },
 
-        approvePersonnel(id) {
-          this.pendingApplicants = this.pendingApplicants.filter(a => a.id !== id);
+        async approvePersonnel(id) {
+          if (!window.db) return;
+          const { error } = await window.db.from('users').update({ is_approved: true }).eq('id', id);
+          if (error) {
+            alert('Error approving user: ' + error.message);
+          } else {
+            alert('VP Approved Successfully!');
+            this.loadPendingApplicants();
+          }
         },
 
-        rejectPersonnel(id) {
-          this.pendingApplicants = this.pendingApplicants.filter(a => a.id !== id);
+        async rejectPersonnel(id) {
+          if (!window.db) return;
+          const { error } = await window.db.from('users').delete().eq('id', id);
+          if (error) {
+            alert('Error rejecting user: ' + error.message);
+          } else {
+            alert('Applicant rejected and removed.');
+            this.loadPendingApplicants();
+          }
         },
 
         submitSponsorForm() {
