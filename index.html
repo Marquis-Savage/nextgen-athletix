@@ -824,11 +824,11 @@
         selectedAthlete: null,
 
         init() {
-          // Connect Supabase Database Client
-          const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL_HERE';
-          const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+          // Connect Supabase Database Client with your project credentials
+          const SUPABASE_URL = 'https://dixvkrnelykxsbrbjlld.supabase.co';
+          const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRixHZrcm5lbHlreHNicmJqbGxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIyOTQwMzgsImV4cCI6MjEwNzg3MDAzOH0.T-1Tsv5VuumkXLnAuro0COWcegHvjUcEd9Dd3tZAbYo';
           
-          if (SUPABASE_URL !== 'YOUR_SUPABASE_PROJECT_URL_HERE' && window.supabase) {
+          if (window.supabase) {
             window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             this.fetchLiveAthletes();
           }
