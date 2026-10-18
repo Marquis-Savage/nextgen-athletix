@@ -23,11 +23,11 @@
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex flex-col justify-between" x-data="appData()">
 
-  <!-- TOP NAVIGATION BAR WITH OFFICIAL BRAND LOGO -->
+  <!-- TOP NAVIGATION BAR -->
   <header class="border-b border-slate-200 bg-white/95 backdrop-blur sticky top-0 z-50 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
       
-      <!-- Official Logo Branding -->
+      <!-- Logo Branding -->
       <div class="flex items-center space-x-3 cursor-pointer" @click="setView('home')">
         <div class="h-[66px] w-[66px] flex items-center justify-center shrink-0">
           <img 
@@ -73,21 +73,106 @@
           <span>Become a Sponsor</span>
         </button>
 
-        <button type="button" @click="setView('admin')" :class="currentView === 'admin' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 cursor-pointer">
-          <i data-lucide="shield" class="w-4 h-4 text-slate-700"></i>
-          <span>Admin</span>
-        </button>
+        <!-- Admin Tab (Only visible if currentUser is admin) -->
+        <template x-if="currentUser && currentUser.role === 'admin'">
+          <button type="button" @click="setView('admin')" :class="currentView === 'admin' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 cursor-pointer">
+            <i data-lucide="shield" class="w-4 h-4 text-rose-600"></i>
+            <span>Admin</span>
+          </button>
+        </template>
       </nav>
+
+      <!-- USER AUTH HEADER STATUS -->
+      <div class="flex items-center space-x-3">
+        <template x-if="currentUser">
+          <div class="flex items-center space-x-3 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-2xl">
+            <div class="text-right">
+              <span class="text-xs font-bold text-slate-900 block" x-text="'Hello, ' + currentUser.name"></span>
+              <span class="text-[10px] font-semibold text-indigo-600 block uppercase" x-text="currentUser.role === 'admin' ? 'Administrator' : 'Verified VP'"></span>
+            </div>
+            <button type="button" @click="handleSignOut()" class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold rounded-xl transition cursor-pointer">
+              Sign Out
+            </button>
+          </div>
+        </template>
+
+        <template x-if="!currentUser">
+          <button type="button" @click="showAuthModal = true" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md transition cursor-pointer flex items-center space-x-1.5">
+            <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+            <span>Sign In / Register</span>
+          </button>
+        </template>
+      </div>
+
     </div>
   </header>
+
+  <!-- AUTHENTICATION MODAL -->
+  <div x-show="showAuthModal" x-cloak class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative" @click.away="showAuthModal = false">
+      <button type="button" @click="showAuthModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold text-lg">&times;</button>
+
+      <div class="flex border-b border-slate-200 mb-6">
+        <button type="button" @click="authTab = 'signin'" :class="authTab === 'signin' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-slate-400'" class="pb-2 text-xs font-bold uppercase tracking-wider flex-1 text-center">Sign In</button>
+        <button type="button" @click="authTab = 'register'" :class="authTab === 'register' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-slate-400'" class="pb-2 text-xs font-bold uppercase tracking-wider flex-1 text-center">VP Registration</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <div x-show="authTab === 'signin'">
+        <h3 class="text-lg font-bold text-slate-900 mb-1">Sign In to Account</h3>
+        <p class="text-xs text-slate-500 mb-4">Access the Verified Personnel workspace or Admin dashboard.</p>
+
+        <form @submit.prevent="handleSignIn()" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
+            <input type="email" x-model="authForm.email" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label>
+            <input type="password" x-model="authForm.password" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+          </div>
+          <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition shadow-md cursor-pointer">
+            Sign In
+          </button>
+        </form>
+      </div>
+
+      <!-- Registration Form -->
+      <div x-show="authTab === 'register'">
+        <h3 class="text-lg font-bold text-slate-900 mb-1">Register as Verified Personnel</h3>
+        <p class="text-xs text-slate-500 mb-4">Account requires admin verification before publishing scores.</p>
+
+        <form @submit.prevent="handleRegistration()" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Full Name</label>
+            <input type="text" x-model="authForm.fullName" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Organization / Academy</label>
+            <input type="text" x-model="authForm.orgName" placeholder="e.g. Saguaro HS / Apex Speed" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
+            <input type="email" x-model="authForm.email" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label>
+            <input type="password" x-model="authForm.password" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+          </div>
+          <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow-md cursor-pointer">
+            Submit Registration
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
 
   <!-- MAIN CONTENT CONTAINER -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
 
     <!-- VIEW 1: WELCOMING HOME PAGE -->
     <div x-show="currentView === 'home'" x-cloak class="space-y-12">
-      
-      <!-- HERO PURPOSE BANNER -->
       <section class="bg-gradient-to-br from-indigo-950 via-indigo-900 to-slate-900 rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden">
         <div class="max-w-3xl relative z-10 space-y-4">
           <div class="flex flex-wrap items-center gap-2">
@@ -105,7 +190,7 @@
           </h1>
           
           <p class="text-indigo-100 text-sm sm:text-base leading-relaxed">
-            NextGen Athletics provides a standardized, verified performance portfolio for young athletes starting in youth developmental sports (ages 6+) and following their progression through high school varsity to college recruitment. Every 40-yard dash time, drill metric, and position grade is submitted and audited by <strong>Verified Personnel (VPs)</strong>—certified coaches, youth directors, skill trainers, and scouts.
+            NextGen Athletics provides a standardized, verified performance portfolio for young athletes starting in youth developmental sports (ages 6+) and following their progression through high school varsity to college recruitment.
           </p>
 
           <div class="pt-4 flex flex-wrap gap-3">
@@ -121,7 +206,7 @@
         </div>
       </section>
 
-      <!-- FEATURED PROSPECTS ROW (YOUTH & VARSITY) -->
+      <!-- FEATURED PROSPECTS ROW -->
       <section>
         <div class="flex items-center justify-between mb-6">
           <div>
@@ -171,43 +256,17 @@
           </template>
         </div>
       </section>
-
-      <!-- YOUTH TO RECRUITING PIPELINE FEATURES -->
-      <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
-          <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center font-bold mb-4">1</div>
-          <h3 class="font-bold text-slate-900 text-base mb-1">Youth Development (Ages 6-13)</h3>
-          <p class="text-xs text-slate-500 leading-relaxed">Establish foundational motor skills, speed baselines, and certified coach ratings long before high school recruiting starts.</p>
-        </div>
-
-        <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
-          <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center font-bold mb-4">2</div>
-          <h3 class="font-bold text-slate-900 text-base mb-1">High School & Combines (Ages 14-18)</h3>
-          <p class="text-xs text-slate-500 leading-relaxed">Log laser-timed 40s, vertical jumps, and NFL position-specific skill ratings updated directly by varsity staff and skill trainers.</p>
-        </div>
-
-        <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
-          <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center font-bold mb-4">3</div>
-          <h3 class="font-bold text-slate-900 text-base mb-1">College Scout Verification</h3>
-          <p class="text-xs text-slate-500 leading-relaxed">Give college recruiters an audited historical record showing multi-year growth instead of unverified self-reported stat sheets.</p>
-        </div>
-      </section>
-
     </div>
 
-    <!-- VIEW 2: ATHLETE DATABASE (ALL LEVELS & POSITIONS) -->
+    <!-- VIEW 2: ATHLETE DATABASE -->
     <div x-show="currentView === 'search'" x-cloak class="space-y-6">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 class="text-2xl font-black text-slate-900">Athlete Database</h1>
           <p class="text-xs text-slate-500">Browse verified prospects across youth developmental leagues, middle school, high school varsity, and combine events.</p>
         </div>
-        <div class="text-xs bg-white border border-slate-200 px-3 py-2 rounded-xl text-slate-600 shadow-sm font-semibold">
-          Showing <strong class="text-indigo-600" x-text="filteredAthletes.length"></strong> of <strong class="text-slate-900" x-text="athletes.length"></strong> Verified Athletes
-        </div>
       </div>
 
-      <!-- Search & Filter Bar -->
       <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
           <div>
@@ -237,7 +296,7 @@
           </div>
 
           <div>
-            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Position (All 16)</label>
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Position</label>
             <select x-model="filterPosition" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-indigo-500">
               <option value="ALL">All Positions</option>
               <template x-for="pos in allFootballPositions" :key="pos.code">
@@ -257,7 +316,6 @@
         </div>
       </div>
 
-      <!-- Prospects Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <template x-for="athlete in filteredAthletes" :key="athlete.id">
           <div class="bg-white border border-slate-200 hover:border-indigo-300 rounded-2xl p-5 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col justify-between" @click="selectAthlete(athlete)">
@@ -330,8 +388,6 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 space-y-8">
-          
-          <!-- COMBINE METRICS -->
           <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
             <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center space-x-2">
               <i data-lucide="timer" class="w-5 h-5 text-indigo-600"></i>
@@ -353,7 +409,6 @@
             </div>
           </div>
 
-          <!-- POSITION-SPECIFIC CATEGORY GRADES -->
           <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
             <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center space-x-2">
               <i data-lucide="bar-chart-3" class="w-5 h-5 text-indigo-600"></i>
@@ -374,10 +429,8 @@
               </template>
             </div>
           </div>
-
         </div>
 
-        <!-- AUDIT LOG -->
         <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
           <h2 class="text-base font-bold text-slate-900 mb-4 flex items-center space-x-2">
             <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
@@ -443,173 +496,160 @@
       </div>
     </div>
 
-    <!-- VIEW 5: VERIFIED PERSONNEL (VP) PORTAL & WORKSPACE -->
+    <!-- VIEW 5: VERIFIED PERSONNEL PORTAL (PROTECTED LOCK SCREEN) -->
     <div x-show="currentView === 'vp_portal'" x-cloak class="max-w-4xl mx-auto space-y-8">
       
-      <!-- VP Login / Account Bar -->
-      <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div class="flex items-center space-x-4">
-          <div class="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-xl">
-            MV
+      <!-- Locked Access Banner -->
+      <template x-if="!currentUser || (currentUser.role !== 'vp' && currentUser.role !== 'admin')">
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 text-center space-y-4 shadow-md my-12">
+          <div class="w-16 h-16 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-2xl mx-auto flex items-center justify-center">
+            <i data-lucide="lock" class="w-8 h-8"></i>
           </div>
-          <div>
-            <div class="flex items-center space-x-2">
-              <h2 class="font-bold text-slate-900 text-lg">Coach Marcus Vance</h2>
-              <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">Active VP</span>
-            </div>
-            <p class="text-xs text-slate-500">Speed Specialist • Apex Speed Academy (AZ)</p>
-          </div>
-        </div>
-
-        <div class="flex items-center space-x-3">
-          <button type="button" @click="activeVpTab = 'add'" :class="activeVpTab === 'add' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl transition cursor-pointer">
-            Add Athlete
-          </button>
-          <button type="button" @click="activeVpTab = 'update'" :class="activeVpTab === 'update' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl transition cursor-pointer">
-            Submit Grades
-          </button>
-          <button type="button" @click="activeVpTab = 'settings'" :class="activeVpTab === 'settings' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl transition cursor-pointer">
-            Privacy
+          <h2 class="text-2xl font-black text-slate-900">VP Portal Access Restricted</h2>
+          <p class="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+            You must be an approved Verified Personnel (VP) or Administrator to enter the scouting workspace and submit player scores.
+          </p>
+          <button type="button" @click="showAuthModal = true" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition cursor-pointer">
+            Sign In / Register as VP
           </button>
         </div>
-      </div>
+      </template>
 
-      <!-- VP ACTION HUB -->
-      <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
-        
-        <!-- Form 1: Add Athlete -->
-        <div x-show="activeVpTab === 'add'" class="space-y-4">
-          <h3 class="text-lg font-bold text-slate-900">Add New Prospect (Youth or Varsity)</h3>
-          <p class="text-xs text-slate-500 mb-4">Create a new player profile starting in youth sports through high school varsity.</p>
-
-          <form @submit.prevent="createNewAthlete()" class="space-y-4">
-            <div class="grid grid-cols-2 gap-4">
+      <!-- Active VP Workspace (Shown only when logged in as VP/Admin) -->
+      <template x-if="currentUser && (currentUser.role === 'vp' || currentUser.role === 'admin')">
+        <div class="space-y-8">
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-4">
+              <div class="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-xl" x-text="currentUser.initials"></div>
               <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">First Name</label>
-                <input type="text" x-model="newAthleteForm.firstName" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Last Name</label>
-                <input type="text" x-model="newAthleteForm.lastName" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+                <div class="flex items-center space-x-2">
+                  <h2 class="font-bold text-slate-900 text-lg" x-text="currentUser.name"></h2>
+                  <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">Active VP</span>
+                </div>
+                <p class="text-xs text-slate-500" x-text="currentUser.org"></p>
               </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-4">
-              <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Development Level</label>
-                <select x-model="newAthleteForm.levelTag" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-                  <option value="Youth">Youth League (Ages 6-12)</option>
-                  <option value="Middle School">Middle School (7th-8th)</option>
-                  <option value="Varsity">High School Varsity (9th-12th)</option>
-                </select>
-              </div>
+            <div class="flex items-center space-x-3">
+              <button type="button" @click="activeVpTab = 'add'" :class="activeVpTab === 'add' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl transition cursor-pointer">Add Athlete</button>
+              <button type="button" @click="activeVpTab = 'update'" :class="activeVpTab === 'update' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl transition cursor-pointer">Submit Grades</button>
+              <button type="button" @click="activeVpTab = 'settings'" :class="activeVpTab === 'settings' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl transition cursor-pointer">Privacy</button>
+            </div>
+          </div>
 
-              <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Position (All 16)</label>
-                <select x-model="newAthleteForm.position" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-                  <template x-for="pos in allFootballPositions" :key="pos.code">
-                    <option :value="pos.code" x-text="pos.code + ' - ' + pos.name"></option>
-                  </template>
-                </select>
-              </div>
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
+            <div x-show="activeVpTab === 'add'" class="space-y-4">
+              <h3 class="text-lg font-bold text-slate-900">Add New Prospect (Youth or Varsity)</h3>
+              <form @submit.prevent="createNewAthlete()" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">First Name</label>
+                    <input type="text" x-model="newAthleteForm.firstName" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Last Name</label>
+                    <input type="text" x-model="newAthleteForm.lastName" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+                  </div>
+                </div>
 
-              <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">State</label>
-                <input type="text" x-model="newAthleteForm.state" placeholder="e.g. AZ" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-              </div>
+                <div class="grid grid-cols-3 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Development Level</label>
+                    <select x-model="newAthleteForm.levelTag" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+                      <option value="Youth">Youth League (Ages 6-12)</option>
+                      <option value="Middle School">Middle School (7th-8th)</option>
+                      <option value="Varsity">High School Varsity (9th-12th)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Position</label>
+                    <select x-model="newAthleteForm.position" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+                      <template x-for="pos in allFootballPositions" :key="pos.code">
+                        <option :value="pos.code" x-text="pos.code + ' - ' + pos.name"></option>
+                      </template>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">State</label>
+                    <input type="text" x-model="newAthleteForm.state" placeholder="e.g. AZ" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">High School / Youth League</label>
+                    <input type="text" x-model="newAthleteForm.highSchool" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">40-Yard Dash (s)</label>
+                    <input type="text" x-model="newAthleteForm.fortyYard" placeholder="4.50" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+                  </div>
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition shadow-md cursor-pointer">
+                  Publish Prospect Profile
+                </button>
+              </form>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">High School / Youth League</label>
-                <input type="text" x-model="newAthleteForm.highSchool" required placeholder="e.g. Pop Warner / Saguaro High" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">40-Yard Dash (s)</label>
-                <input type="text" x-model="newAthleteForm.fortyYard" placeholder="4.50" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-              </div>
+            <div x-show="activeVpTab === 'update'" class="space-y-4">
+              <h3 class="text-lg font-bold text-slate-900">Position-Specific Skill Grading</h3>
+              <form @submit.prevent="submitGradeUpdate()" class="space-y-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Select Prospect</label>
+                  <select x-model="updateForm.athleteId" @change="onProspectSelectForGrading()" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+                    <template x-for="ath in athletes" :key="ath.id">
+                      <option :value="ath.id" x-text="ath.name + ' (' + ath.position + ')'"></option>
+                    </template>
+                  </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Position Skill Category</label>
+                    <select x-model="updateForm.category" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+                      <template x-for="catName in currentAvailableCategories" :key="catName">
+                        <option :value="catName" x-text="catName"></option>
+                      </template>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Score (0 - 100)</label>
+                    <input type="number" x-model="updateForm.score" placeholder="e.g. 92" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+                  </div>
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow-md cursor-pointer">
+                  Publish Verified Rating
+                </button>
+              </form>
             </div>
 
-            <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition shadow-md cursor-pointer">
-              Publish Prospect Profile
-            </button>
-          </form>
-        </div>
-
-        <!-- Form 2: Position-Specific Skill Grading -->
-        <div x-show="activeVpTab === 'update'" class="space-y-4">
-          <h3 class="text-lg font-bold text-slate-900">Position-Specific NFL & Youth Skill Grading</h3>
-          <p class="text-xs text-slate-500 mb-4">Grading categories dynamically update based on the prospect's selected position.</p>
-
-          <form @submit.prevent="submitGradeUpdate()" class="space-y-4">
-            <div>
-              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Select Prospect</label>
-              <select x-model="updateForm.athleteId" @change="onProspectSelectForGrading()" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-                <template x-for="ath in athletes" :key="ath.id">
-                  <option :value="ath.id" x-text="ath.name + ' (' + ath.position + ' - ' + ath.levelTag + ')'"></option>
-                </template>
-              </select>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Position Skill Category</label>
-                <select x-model="updateForm.category" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-                  <template x-for="catName in currentAvailableCategories" :key="catName">
-                    <option :value="catName" x-text="catName"></option>
-                  </template>
-                </select>
-              </div>
-
-              <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Score (0 - 100)</label>
-                <input type="number" x-model="updateForm.score" placeholder="e.g. 92" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+            <div x-show="activeVpTab === 'settings'" class="space-y-4">
+              <h3 class="text-lg font-bold text-slate-900">Personnel Privacy Settings</h3>
+              <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
+                <label class="flex items-center space-x-3 cursor-pointer">
+                  <input type="checkbox" x-model="currentVpSettings.restrictContact" class="rounded bg-white border-slate-300 text-indigo-600">
+                  <span class="text-xs font-bold text-slate-800">Restrict Public Contact Information</span>
+                </label>
               </div>
             </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Scout Remarks / Evaluator Notes</label>
-              <textarea x-model="updateForm.notes" placeholder="Detailed evaluation notes on drill performance..." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 h-20"></textarea>
-            </div>
-
-            <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow-md cursor-pointer">
-              Publish Verified Rating
-            </button>
-          </form>
-        </div>
-
-        <!-- Form 3: VP Settings & Privacy -->
-        <div x-show="activeVpTab === 'settings'" class="space-y-4">
-          <h3 class="text-lg font-bold text-slate-900">Personnel Privacy & Directory Settings</h3>
-          <p class="text-xs text-slate-500 mb-4">Control whether your contact info is visible on the public VP directory to prevent unsolicited contact.</p>
-
-          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
-            <label class="flex items-center space-x-3 cursor-pointer">
-              <input type="checkbox" x-model="currentVpSettings.restrictContact" class="rounded bg-white border-slate-300 text-indigo-600">
-              <span class="text-xs font-bold text-slate-800">Restrict Public Contact Information</span>
-            </label>
-            <p class="text-[11px] text-slate-500 leading-relaxed">When enabled, your email and phone number will be hidden on the public Verified Personnel Directory.</p>
           </div>
         </div>
-
-      </div>
+      </template>
 
     </div>
 
-    <!-- VIEW 6: DEDICATED BECOME A SPONSOR PAGE -->
+    <!-- VIEW 6: BECOME A SPONSOR PAGE -->
     <div x-show="currentView === 'sponsor'" x-cloak class="max-w-4xl mx-auto space-y-10">
-      
       <div class="bg-slate-900 text-white rounded-3xl p-8 sm:p-12 shadow-xl">
-        <span class="px-3 py-1 bg-amber-500/20 border border-amber-400/30 text-amber-300 text-xs font-extrabold rounded-full uppercase tracking-wider inline-block mb-3">
-          Sought-After Partner Network
-        </span>
+        <span class="px-3 py-1 bg-amber-500/20 border border-amber-400/30 text-amber-300 text-xs font-extrabold rounded-full uppercase tracking-wider inline-block mb-3">Sought-After Partner Network</span>
         <h1 class="text-3xl sm:text-5xl font-black tracking-tight">Sponsor NextGen Athletics</h1>
         <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mt-3 max-w-2xl">
           Gain exclusive brand exposure across our youth sports developmental pipelines, high school combine showcases, and college recruitment databases.
         </p>
       </div>
 
-      <!-- Sponsor Tiers -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm space-y-3">
           <span class="text-xs font-bold text-indigo-600 uppercase">Tier 1</span>
@@ -630,11 +670,8 @@
         </div>
       </div>
 
-      <!-- Sponsor Form -->
       <div class="bg-white border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-sm">
         <h3 class="text-xl font-bold text-slate-900 mb-1">Submit Sponsorship Inquiry</h3>
-        <p class="text-xs text-slate-500 mb-6">Inquiries are reviewed personally by our founder.</p>
-
         <form @submit.prevent="submitSponsorForm()" class="space-y-4">
           <div class="grid grid-cols-2 gap-4">
             <div>
@@ -646,77 +683,64 @@
               <input type="text" x-model="sponsorForm.contactName" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
             </div>
           </div>
-
           <div>
             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Phone or Email</label>
             <input type="text" x-model="sponsorForm.contactInfo" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
           </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Sponsorship Goals & Notes</label>
-            <textarea x-model="sponsorForm.notes" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 h-24"></textarea>
-          </div>
-
           <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition shadow-md cursor-pointer">
             Submit Inquiry to Founder
           </button>
         </form>
       </div>
-
     </div>
 
-    <!-- VIEW 7: ADMIN PORTAL WITH ACTIVE VP METRICS BOARD -->
+    <!-- VIEW 7: ADMIN PORTAL (STRICTLY LOCKED) -->
     <div x-show="currentView === 'admin'" x-cloak class="max-w-4xl mx-auto space-y-8">
       
-      <!-- Pending VP Applications -->
-      <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-        <h2 class="text-xl font-bold text-slate-900 mb-1">Pending VP Applications</h2>
-        <p class="text-xs text-slate-500 mb-6">Review personnel requests. Only approved coaches can publish scores.</p>
-
-        <div class="space-y-3">
-          <template x-for="applicant in pendingApplicants" :key="applicant.id">
-            <div class="flex items-center justify-between bg-slate-50 border border-slate-200 p-4 rounded-2xl">
-              <div>
-                <div class="flex items-center space-x-2">
-                  <span class="font-bold text-sm text-slate-900" x-text="applicant.name"></span>
-                  <span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold" x-text="applicant.role"></span>
-                </div>
-                <p class="text-xs text-slate-500 mt-0.5" x-text="applicant.org + ' • ' + applicant.state"></p>
-              </div>
-
-              <div class="flex items-center space-x-2">
-                <button type="button" @click="approvePersonnel(applicant.id)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition cursor-pointer">Approve VP</button>
-                <button type="button" @click="rejectPersonnel(applicant.id)" class="px-3 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold text-xs rounded-lg transition cursor-pointer">Reject</button>
-              </div>
-            </div>
-          </template>
+      <!-- Admin Lock Screen -->
+      <template x-if="!currentUser || currentUser.role !== 'admin'">
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 text-center space-y-4 shadow-md my-12">
+          <div class="w-16 h-16 bg-rose-50 border border-rose-100 text-rose-600 rounded-2xl mx-auto flex items-center justify-center">
+            <i data-lucide="shield-alert" class="w-8 h-8"></i>
+          </div>
+          <h2 class="text-2xl font-black text-slate-900">Administrator Access Only</h2>
+          <p class="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+            This dashboard is restricted exclusively to NextGen Athletics system administrators.
+          </p>
+          <button type="button" @click="showAuthModal = true" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition cursor-pointer">
+            Sign In as Admin
+          </button>
         </div>
-      </div>
+      </template>
 
-      <!-- Active VP Operating Activity Board -->
-      <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-        <h2 class="text-xl font-bold text-slate-900 mb-1">Active Verified Personnel Operating Metrics</h2>
-        <p class="text-xs text-slate-500 mb-6">Monitor personnel activity levels and audited submission totals across the platform.</p>
+      <!-- Active Admin Portal View -->
+      <template x-if="currentUser && currentUser.role === 'admin'">
+        <div class="space-y-8">
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+            <h2 class="text-xl font-bold text-slate-900 mb-1">Pending VP Applications</h2>
+            <p class="text-xs text-slate-500 mb-6">Review personnel requests. Only approved coaches can publish scores.</p>
 
-        <div class="space-y-3">
-          <template x-for="vp in verifiedPersonnelList" :key="vp.id">
-            <div class="flex items-center justify-between bg-slate-50 border border-slate-200 p-4 rounded-2xl">
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-sm" x-text="vp.initials"></div>
-                <div>
-                  <h4 class="font-bold text-slate-900 text-sm" x-text="vp.name"></h4>
-                  <p class="text-xs text-slate-500" x-text="vp.org + ' • ' + vp.specialty"></p>
+            <div class="space-y-3">
+              <template x-for="applicant in pendingApplicants" :key="applicant.id">
+                <div class="flex items-center justify-between bg-slate-50 border border-slate-200 p-4 rounded-2xl">
+                  <div>
+                    <div class="flex items-center space-x-2">
+                      <span class="font-bold text-sm text-slate-900" x-text="applicant.name"></span>
+                      <span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold" x-text="applicant.role"></span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-0.5" x-text="applicant.org + ' • ' + applicant.email"></p>
+                  </div>
+
+                  <div class="flex items-center space-x-2">
+                    <button type="button" @click="approvePersonnel(applicant.id)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition cursor-pointer">Approve VP</button>
+                    <button type="button" @click="rejectPersonnel(applicant.id)" class="px-3 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold text-xs rounded-lg transition cursor-pointer">Reject</button>
+                  </div>
                 </div>
-              </div>
-
-              <div class="text-right">
-                <span class="text-sm font-black text-indigo-600 block" x-text="vp.submissionCount + ' Audited Submissions'"></span>
-                <span class="text-[10px] text-emerald-600 font-bold uppercase" x-text="'Status: Active VP'"></span>
-              </div>
+              </template>
             </div>
-          </template>
+          </div>
         </div>
-      </div>
+      </template>
 
     </div>
 
@@ -741,6 +765,11 @@
       Alpine.data('appData', () => ({
         currentView: 'home',
         activeVpTab: 'add',
+        showAuthModal: false,
+        authTab: 'signin',
+        currentUser: null,
+
+        authForm: { email: '', password: '', fullName: '', orgName: '' },
         searchQuery: '',
         filterState: 'ALL',
         filterPosition: 'ALL',
@@ -753,31 +782,17 @@
         currentVpSettings: { restrictContact: false },
 
         allFootballPositions: [
-          { code: 'QB', name: 'Quarterback', categories: ['Passing Accuracy & Velocity', 'Pocket Awareness & Vision', 'Arm Mechanics', 'Footwork & Rollouts'] },
-          { code: 'RB', name: 'Running Back', categories: ['Vision & Hole Selection', 'Elusiveness & Break-Tackle', 'Pass Protection', 'Receiving Hands'] },
-          { code: 'WR', name: 'Wide Receiver', categories: ['Route Running Precision', 'Catch Radius & Hands', 'Release vs Press', 'YAC Ability'] },
-          { code: 'TE', name: 'Tight End', categories: ['In-Line Run Blocking', 'Pass Protection', 'Seam Route Running', 'Catch Radius'] },
-          { code: 'OT', name: 'Offensive Tackle', categories: ['Pass Set Kick-Slide', 'Run Block Drive', 'Lateral Footwork', 'Second Level Pushing'] },
-          { code: 'OG', name: 'Offensive Guard', categories: ['Interior Power Drive', 'Pulling & Trapping', 'Anchor Power', 'Hand Placement'] },
-          { code: 'C',  name: 'Center', categories: ['Snap Accuracy', 'Interior Combination Blocks', 'Line Calls & IQ', 'Anchor Power'] },
-          { code: 'DE', name: 'Defensive End', categories: ['Edge Rush Bend', 'First Step Explosion', 'Run Edge Containment', 'Hand Shedding'] },
-          { code: 'DT', name: 'Defensive Tackle', categories: ['Interior Gap Plug', 'Bull Rush Power', 'Double-Team Anchor', 'Shed & Tackle'] },
-          { code: 'LB', name: 'Linebacker', categories: ['Gap Diagnosis & Trigger', 'Open-Field Tackling', 'Pass Coverage Drop', 'Sideline Pursuit'] },
-          { code: 'CB', name: 'Cornerback', categories: ['Man-to-Man Press Coverage', 'Hip Fluidity & Turn', 'Zone Backpedal', 'Run Support Tackling'] },
-          { code: 'FS', name: 'Free Safety', categories: ['Deep Field Range', 'Ball Tracking & INTs', 'Open Field Tackling', 'Communication'] },
-          { code: 'SS', name: 'Strong Safety', categories: ['Box Run Support', 'Tight End Coverage', 'Tackling Power', 'Blitz Timing'] },
-          { code: 'K',  name: 'Kicker', categories: ['Field Goal Accuracy', 'Kickoff Touchback Power', 'Operation Time'] },
-          { code: 'P',  name: 'Punter', categories: ['Hang Time', 'Punt Distance', 'Directional Placement'] },
-          { code: 'LS', name: 'Long Snapper', categories: ['Snap Velocity', 'Accuracy', 'Coverage Speed'] }
+          { code: 'QB', name: 'Quarterback', categories: ['Passing Accuracy & Velocity', 'Pocket Awareness & Vision', 'Arm Mechanics'] },
+          { code: 'RB', name: 'Running Back', categories: ['Vision & Hole Selection', 'Elusiveness & Break-Tackle', 'Pass Protection'] },
+          { code: 'WR', name: 'Wide Receiver', categories: ['Route Running Precision', 'Catch Radius & Hands', 'Release vs Press'] }
         ],
 
         verifiedPersonnelList: [
-          { id: 'VP-1', initials: 'MV', name: 'Coach Marcus Vance', title: 'Speed Specialist', org: 'Apex Speed Academy', specialty: 'WR / DB Speed & Footwork', submissionCount: 42, publicEmail: 'mvance@apexspeed.com', publicPhone: '(602) 555-0192', isContactRestricted: false },
-          { id: 'VP-2', initials: 'RM', name: 'Trainer Ray Miller', title: 'Skills Director', org: 'Elite Football Academy', specialty: 'QB / RB Mechanics', submissionCount: 28, publicEmail: 'rmiller@elitefootball.com', publicPhone: '(214) 555-0144', isContactRestricted: false }
+          { id: 'VP-1', initials: 'MV', name: 'Coach Marcus Vance', title: 'Speed Specialist', org: 'Apex Speed Academy', specialty: 'WR / DB Speed', submissionCount: 42, publicEmail: 'mvance@apexspeed.com', publicPhone: '(602) 555-0192', isContactRestricted: false }
         ],
 
         pendingApplicants: [
-          { id: 101, name: 'Coach Dave Williams', role: 'Varsity Head Coach', org: 'Chandler High School', state: 'AZ' }
+          { id: 101, name: 'Coach Dave Williams', role: 'Varsity Head Coach', org: 'Chandler High School', email: 'dave@chandler football.org' }
         ],
 
         athletes: [
@@ -794,57 +809,87 @@
             height: `6'1"`,
             weight: 188,
             combine: { '40Yard': '4.42', '40YardVerifiedBy': 'Coach Marcus Vance', shuttle: '4.12', shuttleVerifiedBy: 'Trainer Ray Miller', vertical: '37.5' },
-            categories: [
-              { name: 'Route Running Precision', ratings: [{ id: 1, evaluatorName: 'Coach Marcus Vance', score: 94 }] },
-              { name: 'Catch Radius & Hands', ratings: [{ id: 1, evaluatorName: 'Coach Marcus Vance', score: 95 }] }
-            ],
+            categories: [{ name: 'Route Running Precision', ratings: [{ id: 1, evaluatorName: 'Coach Marcus Vance', score: 94 }] }],
             auditLogs: [{ id: 1, action: 'Route Running Grade Updated to 94', updatedBy: 'Coach Marcus Vance' }]
-          },
-          {
-            id: 'ATH-2',
-            name: 'Jaxson Miller',
-            initials: 'JM',
-            highSchool: 'West Valley Pop Warner',
-            city: 'Phoenix',
-            state: 'AZ',
-            position: 'RB',
-            levelTag: 'Youth',
-            classYear: '2031',
-            height: `5'2"`,
-            weight: 115,
-            combine: { '40Yard': '5.10', '40YardVerifiedBy': 'Coach Marcus Vance', shuttle: '4.65', shuttleVerifiedBy: 'Coach Marcus Vance', vertical: '26.0' },
-            categories: [
-              { name: 'Vision & Hole Selection', ratings: [{ id: 1, evaluatorName: 'Coach Marcus Vance', score: 88 }] },
-              { name: 'Elusiveness & Break-Tackle', ratings: [{ id: 1, evaluatorName: 'Coach Marcus Vance', score: 90 }] }
-            ],
-            auditLogs: [{ id: 1, action: 'Youth Profile Created', updatedBy: 'Coach Marcus Vance' }]
           }
         ],
 
         selectedAthlete: null,
 
         init() {
-          // Connect Supabase Database Client with your project credentials
           const SUPABASE_URL = 'https://dixvkrnelykxsbrbjlld.supabase.co';
           const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRixHZrcm5lbHlreHNicmJqbGxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIyOTQwMzgsImV4cCI6MjEwNzg3MDAzOH0.T-1Tsv5VuumkXLnAuro0COWcegHvjUcEd9Dd3tZAbYo';
           
           if (window.supabase) {
             window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            this.fetchLiveAthletes();
+            this.checkSession();
           }
 
           this.selectedAthlete = this.athletes[0];
-          this.onProspectSelectForGrading();
           setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 100);
         },
 
-        async fetchLiveAthletes() {
+        async checkSession() {
           if (!window.db) return;
-          const { data, error } = await window.db.from('athletes').select('*');
-          if (data && data.length > 0) {
-            this.athletes = data;
-            this.selectedAthlete = this.athletes[0];
+          const { data: { session } } = await window.db.auth.getSession();
+          if (session) {
+            const { data: profile } = await window.db.from('users').select('*').eq('id', session.user.id).single();
+            if (profile) {
+              this.currentUser = {
+                id: profile.id,
+                name: profile.full_name,
+                initials: profile.full_name ? profile.full_name.split(' ').map(n=>n[0]).join('') : 'U',
+                role: profile.role,
+                org: profile.title_or_org
+              };
+            }
           }
+        },
+
+        async handleSignIn() {
+          if (!window.db) return;
+          const { data, error } = await window.db.auth.signInWithPassword({
+            email: this.authForm.email,
+            password: this.authForm.password
+          });
+
+          if (error) {
+            alert('Sign in failed: ' + error.message);
+          } else {
+            await this.checkSession();
+            this.showAuthModal = false;
+            alert('Signed in successfully!');
+          }
+        },
+
+        async handleRegistration() {
+          if (!window.db) return;
+          const { data, error } = await window.db.auth.signUp({
+            email: this.authForm.email,
+            password: this.authForm.password
+          });
+
+          if (error) {
+            alert('Registration error: ' + error.message);
+          } else if (data.user) {
+            await window.db.from('users').insert({
+              id: data.user.id,
+              full_name: this.authForm.fullName,
+              email: this.authForm.email,
+              role: 'vp',
+              is_approved: false,
+              title_or_org: this.authForm.orgName
+            });
+            alert('Registration submitted! You will be able to publish metrics once an administrator approves your account.');
+            this.showAuthModal = false;
+          }
+        },
+
+        async handleSignOut() {
+          if (window.db) await window.db.auth.signOut();
+          this.currentUser = null;
+          this.setView('home');
+          alert('Signed out successfully.');
         },
 
         setView(view) {
@@ -856,12 +901,7 @@
           const selectedAth = this.athletes.find(a => a.id === this.updateForm.athleteId);
           const posCode = selectedAth ? selectedAth.position : 'WR';
           const match = this.allFootballPositions.find(p => p.code === posCode);
-          return match ? match.categories : ['General Athleticism', 'Speed', 'Footwork'];
-        },
-
-        onProspectSelectForGrading() {
-          const cats = this.currentAvailableCategories;
-          if (cats && cats.length > 0) this.updateForm.category = cats[0];
+          return match ? match.categories : ['General Athleticism'];
         },
 
         get filteredAthletes() {
@@ -870,7 +910,6 @@
             if (this.filterState !== 'ALL' && a.state !== this.filterState) return false;
             if (this.filterPosition !== 'ALL' && a.position !== this.filterPosition) return false;
             if (this.filterLevel !== 'ALL' && a.levelTag !== this.filterLevel) return false;
-            if (parseInt(this.filterMinGrade) > 0 && this.getAthleteOverallAvg(a) < parseInt(this.filterMinGrade)) return false;
             return true;
           });
         },
@@ -906,15 +945,15 @@
         },
 
         submitSponsorForm() {
-          alert(`Thank you, ${this.sponsorForm.contactName}! Your sponsorship inquiry for ${this.sponsorForm.orgName} has been submitted.`);
+          alert(`Thank you, ${this.sponsorForm.contactName}! Inquiry submitted.`);
           this.sponsorForm = { orgName: '', contactName: '', contactInfo: '', notes: '' };
         },
 
-        async createNewAthlete() {
+        createNewAthlete() {
           const newAth = {
             id: 'ATH-' + Date.now(),
             name: `${this.newAthleteForm.firstName} ${this.newAthleteForm.lastName}`,
-            initials: `${this.newAthleteForm.firstName[0] || 'A'}${this.newAthleteForm.lastName[0] || 'B'}`,
+            initials: `${this.newAthleteForm.firstName[0]}${this.newAthleteForm.lastName[0]}`,
             highSchool: this.newAthleteForm.highSchool,
             city: 'Phoenix',
             state: this.newAthleteForm.state,
@@ -923,36 +962,13 @@
             classYear: this.newAthleteForm.classYear,
             height: `5'10"`,
             weight: 165,
-            combine: { '40Yard': this.newAthleteForm.fortyYard || '4.60', '40YardVerifiedBy': 'Coach Marcus Vance', shuttle: '4.30', shuttleVerifiedBy: 'Coach Marcus Vance', vertical: '32.0' },
-            categories: [{ name: 'General Performance', ratings: [{ id: 1, evaluatorName: 'Coach Marcus Vance', score: 88 }] }],
-            auditLogs: [{ id: 1, action: `Profile Created (${this.newAthleteForm.levelTag})`, updatedBy: 'Coach Marcus Vance' }]
+            combine: { '40Yard': this.newAthleteForm.fortyYard || '4.60', '40YardVerifiedBy': this.currentUser ? this.currentUser.name : 'VP', shuttle: '4.30', shuttleVerifiedBy: 'VP', vertical: '32.0' },
+            categories: [{ name: 'General Performance', ratings: [{ id: 1, evaluatorName: this.currentUser ? this.currentUser.name : 'VP', score: 88 }] }],
+            auditLogs: [{ id: 1, action: `Profile Created (${this.newAthleteForm.levelTag})`, updatedBy: this.currentUser ? this.currentUser.name : 'VP' }]
           };
-
-          if (window.db) {
-            const { error } = await window.db.from('athletes').insert([newAth]);
-            if (error) alert('Error saving to Supabase: ' + error.message);
-          }
 
           this.athletes.unshift(newAth);
           this.selectAthlete(newAth);
-        },
-
-        async handleVpSignUp(email, password, fullName) {
-          if (!window.db) {
-            alert('Supabase project details are required to complete live signups.');
-            return;
-          }
-          const { data, error } = await window.db.auth.signUp({
-            email,
-            password,
-            options: { data: { full_name: fullName, role: 'VP' } }
-          });
-
-          if (error) {
-            alert('Signup failed: ' + error.message);
-          } else {
-            alert('Verification request submitted! Admin will approve your VP account.');
-          }
         },
 
         submitGradeUpdate() {
@@ -963,8 +979,8 @@
               cat = { name: this.updateForm.category, ratings: [] };
               ath.categories.push(cat);
             }
-            cat.ratings.unshift({ id: Date.now(), evaluatorName: 'Coach Marcus Vance', score: parseInt(this.updateForm.score) });
-            ath.auditLogs.unshift({ id: Date.now(), action: `${this.updateForm.category} updated to ${this.updateForm.score}`, updatedBy: 'Coach Marcus Vance' });
+            cat.ratings.unshift({ id: Date.now(), evaluatorName: this.currentUser ? this.currentUser.name : 'VP', score: parseInt(this.updateForm.score) });
+            ath.auditLogs.unshift({ id: Date.now(), action: `${this.updateForm.category} updated to ${this.updateForm.score}`, updatedBy: this.currentUser ? this.currentUser.name : 'VP' });
 
             alert(`Published rating update for ${ath.name}!`);
             this.selectAthlete(ath);
