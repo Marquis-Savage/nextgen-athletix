@@ -14,6 +14,9 @@
   <!-- Alpine.js Core -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
+  <!-- Supabase Database & Auth SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     [x-cloak] { display: none !important; }
   </style>
@@ -821,9 +824,27 @@
         selectedAthlete: null,
 
         init() {
+          // Connect Supabase Database Client
+          const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL_HERE';
+          const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+          
+          if (SUPABASE_URL !== 'YOUR_SUPABASE_PROJECT_URL_HERE' && window.supabase) {
+            window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            this.fetchLiveAthletes();
+          }
+
           this.selectedAthlete = this.athletes[0];
           this.onProspectSelectForGrading();
           setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 100);
+        },
+
+        async fetchLiveAthletes() {
+          if (!window.db) return;
+          const { data, error } = await window.db.from('athletes').select('*');
+          if (data && data.length > 0) {
+            this.athletes = data;
+            this.selectedAthlete = this.athletes[0];
+          }
         },
 
         setView(view) {
@@ -889,7 +910,7 @@
           this.sponsorForm = { orgName: '', contactName: '', contactInfo: '', notes: '' };
         },
 
-        createNewAthlete() {
+        async createNewAthlete() {
           const newAth = {
             id: 'ATH-' + Date.now(),
             name: `${this.newAthleteForm.firstName} ${this.newAthleteForm.lastName}`,
@@ -907,8 +928,31 @@
             auditLogs: [{ id: 1, action: `Profile Created (${this.newAthleteForm.levelTag})`, updatedBy: 'Coach Marcus Vance' }]
           };
 
+          if (window.db) {
+            const { error } = await window.db.from('athletes').insert([newAth]);
+            if (error) alert('Error saving to Supabase: ' + error.message);
+          }
+
           this.athletes.unshift(newAth);
           this.selectAthlete(newAth);
+        },
+
+        async handleVpSignUp(email, password, fullName) {
+          if (!window.db) {
+            alert('Supabase project details are required to complete live signups.');
+            return;
+          }
+          const { data, error } = await window.db.auth.signUp({
+            email,
+            password,
+            options: { data: { full_name: fullName, role: 'VP' } }
+          });
+
+          if (error) {
+            alert('Signup failed: ' + error.message);
+          } else {
+            alert('Verification request submitted! Admin will approve your VP account.');
+          }
         },
 
         submitGradeUpdate() {
