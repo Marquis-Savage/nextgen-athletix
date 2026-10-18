@@ -887,28 +887,21 @@
           if (!window.db) return;
           const { data, error } = await window.db.auth.signUp({
             email: this.authForm.email,
-            password: this.authForm.password
+            password: this.authForm.password,
+            options: {
+              data: {
+                full_name: this.authForm.fullName,
+                title_or_org: this.authForm.orgName
+              }
+            }
           });
 
           if (error) {
             alert('Registration error: ' + error.message);
-          } else if (data.user) {
-            const { error: profileError } = await window.db.from('users').insert({
-              id: data.user.id,
-              full_name: this.authForm.fullName,
-              email: this.authForm.email,
-              role: 'vp',
-              is_approved: false,
-              title_or_org: this.authForm.orgName
-            });
-
-            if (profileError) {
-              console.error('Profile insertion error:', profileError.message);
-              alert('Account created, but profile record failed: ' + profileError.message);
-            } else {
-              alert('Registration submitted successfully! You will be able to publish metrics once an administrator approves your account.');
-              this.showAuthModal = false;
-            }
+          } else {
+            alert('Registration submitted successfully! You will be able to publish metrics once an administrator approves your account.');
+            this.showAuthModal = false;
+            this.authForm = { email: '', password: '', fullName: '', orgName: '' };
           }
         },
 
