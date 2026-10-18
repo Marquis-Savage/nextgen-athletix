@@ -1,75 +1,80 @@
--- 1. ENABLE UUID EXTENSION
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NextGen Athlete DB - Football Scouting Platform</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Alpine.js for interactive client state -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    [x-cloak] { display: none !important; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen" x-data="appData()">
 
--- 2. USERS & VERIFIED PERSONNEL TABLE
-CREATE TABLE public.users (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  full_name TEXT NOT NULL,
-  email TEXT UNIQUE NOT NULL,
-  role TEXT CHECK (role IN ('guest', 'verified_personnel', 'admin')) DEFAULT 'guest',
-  is_approved BOOLEAN DEFAULT FALSE,
-  title_or_org TEXT,
-  accolades TEXT[],
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+  <!-- Top Navigation & Persona View Switcher -->
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer" @click="currentView = 'search'">
+        <div class="bg-indigo-600 p-2 rounded-lg text-white font-black tracking-widest text-lg">
+          NXG
+        </div>
+        <div>
+          <span class="font-bold text-lg tracking-wide bg-gradient-to-r from-white via-slate-200 to-indigo-400 bg-clip-text text-transparent">
+            NEXTGEN ATHLETIX
+          </span>
+          <span class="ml-2 text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 uppercase tracking-wider">
+            FOOTBALL HQ
+          </span>
+        </div>
+      </div>
 
--- 3. ATHLETES TABLE
-CREATE TABLE public.athletes (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  first_name TEXT NOT NULL,
-  last_name TEXT NOT NULL,
-  position TEXT NOT NULL,
-  high_school TEXT NOT NULL,
-  city TEXT NOT NULL,
-  state TEXT NOT NULL,
-  class_year INT NOT NULL,
-  height_inches INT NOT NULL,
-  weight_lbs INT NOT NULL,
-  created_by UUID REFERENCES public.users(id),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+      <!-- Navigation Tabs -->
+      <nav class="flex items-center space-x-1 sm:space-x-2">
+        <button 
+          @click="currentView = 'search'" 
+          :class="currentView === 'search' ? 'bg-indigo-600/20 text-indigo-400 border-indigo-500/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'"
+          class="px-3 py-1.5 rounded-md text-xs font-semibold border border-transparent transition flex items-center space-x-1.5">
+          <i data-lucide="search" class="w-4 h-4"></i>
+          <span>Scout Engine</span>
+        </button>
 
--- 4. COMBINE METRICS TABLE (40-Yard, Vertical, Shuttle + Video Proof)
-CREATE TABLE public.combine_metrics (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  athlete_id UUID REFERENCES public.athletes(id) ON DELETE CASCADE,
-  metric_name TEXT NOT NULL, -- e.g., '40_yard', 'shuttle', 'vertical'
-  score_value TEXT NOT NULL, -- e.g., '4.42'
-  video_url TEXT,            -- Link to video proof
-  verified_by UUID REFERENCES public.users(id),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+        <button 
+          @click="currentView = 'profile'" 
+          :class="currentView === 'profile' ? 'bg-indigo-600/20 text-indigo-400 border-indigo-500/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'"
+          class="px-3 py-1.5 rounded-md text-xs font-semibold border border-transparent transition flex items-center space-x-1.5">
+          <i data-lucide="user" class="w-4 h-4"></i>
+          <span>Athlete Profile</span>
+        </button>
 
--- 5. CATEGORY GRADES TABLE (Footwork, Speed, Route Running, etc.)
-CREATE TABLE public.category_grades (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  athlete_id UUID REFERENCES public.athletes(id) ON DELETE CASCADE,
-  category_name TEXT NOT NULL,
-  score INT CHECK (score >= 0 AND score <= 100),
-  last_graded_by UUID REFERENCES public.users(id),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+        <button 
+          @click="currentView = 'personnel_creator'" 
+          :class="currentView === 'personnel_creator' ? 'bg-indigo-600/20 text-indigo-400 border-indigo-500/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'"
+          class="px-3 py-1.5 rounded-md text-xs font-semibold border border-transparent transition flex items-center space-x-1.5">
+          <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-400"></i>
+          <span>Add Athlete / Grade</span>
+        </button>
 
--- 6. GRADE CHANGELOGS (Immutable Audit Trail)
-CREATE TABLE public.grade_changelogs (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  athlete_id UUID REFERENCES public.athletes(id) ON DELETE CASCADE,
-  category_name TEXT NOT NULL,
-  old_score INT,
-  new_score INT NOT NULL,
-  evaluation_notes TEXT,
-  updated_by UUID REFERENCES public.users(id),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+        <button 
+          @click="currentView = 'admin'" 
+          :class="currentView === 'admin' ? 'bg-indigo-600/20 text-indigo-400 border-indigo-500/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'"
+          class="px-3 py-1.5 rounded-md text-xs font-semibold border border-transparent transition flex items-center space-x-1.5">
+          <i data-lucide="shield-check" class="w-4 h-4 text-amber-400"></i>
+          <span>Admin Portal</span>
+        </button>
+      </nav>
+    </div>
+  </header>
 
--- 7. ENABLE ROW LEVEL SECURITY (RLS) FOR READ-ONLY PUBLIC ACCESS
-ALTER TABLE public.athletes ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.combine_metrics ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.category_grades ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.grade_changelogs ENABLE ROW LEVEL SECURITY;
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
--- Allow anyone (public/recruiters/fans) to read data
-CREATE POLICY "Public Read Access" ON public.athletes FOR SELECT USING (true);
-CREATE POLICY "Public Read Combine" ON public.combine_metrics FOR SELECT USING (true);
-CREATE POLICY "Public Read Grades" ON public.category_grades FOR SELECT USING (true);
-CREATE POLICY "Public Read Audit" ON public.grade_changelogs FOR SELECT USING (true);
+    <!-- VIEW 1: ADVANCED SCOUT & SEARCH ENGINE -->
+    <div x-show="currentView === 'search'" x-cloak>
+      <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-extrabold text-white">Scout Search & Athlete Database</h1>
+          <p class="text-xs text-slate-400 mt-1">Search verified prospects across states, positions, combine scores, and multi-evaluator grade averages.</p>
