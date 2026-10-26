@@ -46,7 +46,7 @@
           </div>
         </div>
 
-        <!-- Mobile Auth (Visible only on small screens) -->
+        <!-- Mobile Auth -->
         <div class="lg:hidden">
            <template x-if="currentUser">
              <button type="button" @click="handleSignOut()" class="px-3 py-1.5 bg-rose-50 text-rose-600 text-[10px] font-bold rounded-lg">Sign Out</button>
@@ -57,7 +57,7 @@
         </div>
       </div>
 
-      <!-- Main Navigation (Stacked/Wrapping) -->
+      <!-- Main Navigation -->
       <nav class="flex flex-wrap items-center justify-center gap-2 w-full lg:w-auto">
         <button type="button" @click="setView('home')" :class="currentView === 'home' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
           <i data-lucide="home" class="w-3.5 h-3.5"></i><span>Home</span>
@@ -487,13 +487,12 @@
         </div>
       </div>
 
-      <!-- NEW: Full Width Gallery Section -->
+      <!-- Full Width Gallery Section -->
       <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
         <h2 class="text-lg font-bold text-slate-900 mb-4 border-b pb-2">Gallery & Highlights</h2>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
            <template x-for="media in selectedAthlete.gallery" :key="media.url">
               <div class="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-sm relative group">
-                 <!-- Simple check to render video vs image based on extension or fallback -->
                  <template x-if="media.url.match(/\.(mp4|webm|ogg)$/i)">
                     <video :src="media.url" controls class="w-full h-40 object-cover"></video>
                  </template>
@@ -515,7 +514,7 @@
       </div>
     </div>
 
-    <!-- METRIC HISTORY MODAL (Graph & Logs) -->
+    <!-- METRIC HISTORY MODAL -->
     <div x-show="activeMetricModal" x-cloak class="fixed inset-0 z-[60] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
       <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl relative" @click.away="closeMetricHistory()">
         <button type="button" @click="closeMetricHistory()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold text-lg">&times;</button>
@@ -545,10 +544,8 @@
       </div>
     </div>
 
-    <!-- VIEW 5: VP PORTAL -->
+    <!-- VIEW: VP PORTAL -->
     <div x-show="currentView === 'vp_portal'" x-cloak class="max-w-4xl mx-auto space-y-8">
-      
-      <!-- Labeled Lock Screen for unauthenticated users -->
       <template x-if="!currentUser || (currentUser.role !== 'vp' && currentUser.role !== 'admin')">
         <div class="bg-white border border-slate-200 rounded-3xl p-8 sm:p-12 text-center shadow-md my-12 max-w-lg mx-auto">
           <div class="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="lock" class="w-10 h-10"></i></div>
@@ -558,7 +555,6 @@
         </div>
       </template>
 
-      <!-- Authenticated Portal View -->
       <template x-if="currentUser && (currentUser.role === 'vp' || currentUser.role === 'admin')">
         <div class="space-y-8">
           <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-wrap items-center gap-3">
@@ -642,7 +638,7 @@
               <button type="button" @click="submitEvaluation()" class="w-full py-3 mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition">Publish Verified Report</button>
             </div>
 
-            <!-- NEW: Gallery Upload Tab -->
+            <!-- Gallery Upload Tab -->
             <div x-show="activeVpTab === 'gallery_upload'">
                <h3 class="text-lg font-bold text-slate-900 mb-4">Submit Media to Gallery</h3>
                <form @submit.prevent="submitGalleryMedia()" class="space-y-4">
@@ -693,12 +689,10 @@
       </template>
     </div>
 
-    <!-- VIEW 6: ADMIN PORTAL -->
+    <!-- VIEW: ADMIN PORTAL -->
     <div x-show="currentView === 'admin'" x-cloak class="max-w-5xl mx-auto space-y-8">
       <template x-if="currentUser && currentUser.role === 'admin'">
         <div class="space-y-8">
-          
-          <!-- Pending Requests -->
           <div class="bg-white border border-rose-200 rounded-3xl p-6 shadow-sm">
             <h2 class="text-xl font-bold text-slate-900 mb-4">Pending VP Applications</h2>
             <div class="space-y-3">
@@ -718,7 +712,6 @@
             </div>
           </div>
 
-          <!-- Active Directory Management -->
           <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
             <h2 class="text-xl font-bold text-slate-900 mb-4">Current Verified Personnel</h2>
             <div class="overflow-x-auto">
@@ -742,6 +735,24 @@
       </template>
     </div>
 
+    <!-- VIEW: ABOUT US -->
+    <div x-show="currentView === 'about'" x-cloak class="max-w-4xl mx-auto space-y-8">
+      <div class="bg-white border border-slate-200 rounded-3xl p-8 sm:p-12 shadow-md text-center">
+        <h1 class="text-3xl sm:text-4xl font-black text-slate-900 mb-6">Pioneering the Future of Scouting</h1>
+        <div class="w-16 h-1 bg-indigo-600 mx-auto mb-8"></div>
+        <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6 text-left">
+          NextGen Athletix was founded to introduce a transformative element to the athletic journey—opening doors for athletes, trainers, and coaches alike. While traditional platforms settle for basic stat tracking, NextGen Athletix is engineered to do more.
+        </p>
+        <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6 text-left">
+          We provide deep, verified performance analytics, advanced metrics, and a comprehensive scouting network designed to make the overall sports landscape more accurate, highly detailed, and rich with opportunity.
+        </p>
+        <div class="text-left border-t border-slate-100 pt-6">
+          <p class="font-black text-lg text-slate-900">— Marquis Savage</p>
+          <p class="text-xs font-bold text-indigo-600 uppercase tracking-widest mt-1">Founder & CEO, NextGen Athletix</p>
+        </div>
+      </div>
+    </div>
+
   </main>
   
   <footer class="border-t border-slate-200 bg-white py-6 mt-12 text-center text-xs text-slate-500 font-black tracking-widest">NEXTGEN ATHLETIX &copy; 2026</footer>
@@ -755,18 +766,15 @@
         authTab: 'signin',
         currentUser: null,
         
-        // Modal State
         activeMetricModal: false,
         activeMetricName: '',
         activeMetricKey: '',
         activeMetricLogs: [],
         chartInstance: null,
         
-        // Search State
         searchQuery: '',
         filterPosition: 'ALL',
 
-        // Forms
         authForm: { email: '', password: '', fullName: '', orgName: '', phone: '' },
         vpProfileForm: { name: '', org: '', phone: '', bio: '', photoUrl: '', isPrivate: false },
         sponsorForm: { orgName: '', contactName: '', contactInfo: '', tier: 'Tier 1', additionalInfo: '' },
@@ -803,38 +811,74 @@
 
         vpDirectoryList: [],
         pendingApplicants: [],
-
-        // Mock DB for Layout Testing (Needs to be migrated to Postgres for permanence)
-        athletes: [
-          { id: 'ATH-1', name: 'DeAndre Carter', initials: 'DC', highSchool: 'Saguaro HS', state: 'AZ', position: 'WR', photoUrl: '', gallery: [{url: 'https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=400', title: 'State Champs', date: '2026-10-20'}], evaluations: [
-            { id: 1, date: '2026-09-01', evaluator: 'Coach Vance', metrics: { 'Route Running': { score: 94 }, 'forty': { value: '4.42', media: 'https://example.com/video.mp4' } } },
-            { id: 2, date: '2026-10-15', evaluator: 'Coach Vance', metrics: { 'Route Running': { score: 96 }, 'forty': { value: '4.38' } } }
-          ]},
-          { id: 'ATH-2', name: 'Javon Mitchell', initials: 'JM', highSchool: 'Chandler HS', state: 'AZ', position: 'RB', photoUrl: '', gallery: [], evaluations: [
-            { id: 3, date: '2026-10-02', evaluator: 'Coach Miller', metrics: { 'Vision': { score: 88 }, 'forty': { value: '4.55' }, 'vertical': { value: '34' } } }
-          ]},
-          { id: 'ATH-3', name: 'Elijah Brown', initials: 'EB', highSchool: 'Basha HS', state: 'AZ', position: 'QB', photoUrl: '', gallery: [], evaluations: [
-            { id: 4, date: '2026-10-10', evaluator: 'Coach Smith', metrics: { 'Arm Strength': { score: 92 }, 'Accuracy': { score: 90 } } }
-          ]},
-          { id: 'ATH-4', name: 'Mason Taylor', initials: 'MT', highSchool: 'Hamilton HS', state: 'AZ', position: 'LB', photoUrl: '', gallery: [], evaluations: [
-            { id: 5, date: '2026-10-12', evaluator: 'Coach Jones', metrics: { 'Tackling': { score: 85 } } }
-          ]}
-        ],
+        athletes: [],
         selectedAthlete: null,
         selectedVp: null,
 
-        init() {
+        async init() {
           const SUPABASE_URL = 'https://dixvkrnelykxsbrbjlld.supabase.co';
           const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpeHZrcm5lbHlreHNicmJqbGxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIyOTQwMzgsImV4cCI6MjEwNzg3MDAzOH0.T-1Tsv5VuumkXLnAuro0COWcegHvjUcEd9Dd3tZAbYo';
           if (window.supabase) {
             window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             this.checkSession();
             this.loadVerifiedPersonnel();
-          } else {
-             this.vpDirectoryList = [{id:'vp1', full_name: 'Marquis Savage', title_or_org: 'NextGen Athletix Founder', bio: 'Creator of the ultimate scouting network.', email: 'test@test.com', is_private: false}];
+            await this.loadAthletesFromDatabase();
           }
           this.resetEvalForm();
           setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 100);
+        },
+
+        async loadAthletesFromDatabase() {
+          if (!window.db) return;
+          try {
+            const { data: athletesData, error } = await window.db.from('athletes').select('*');
+            if (error) { console.error(error); return; }
+
+            if (athletesData && athletesData.length > 0) {
+              this.athletes = [];
+              for (let ath of athletesData) {
+                // Fetch evaluations for this athlete
+                const { data: evals } = await window.db.from('evaluations').select('*').eq('athlete_id', ath.id).order('date', { ascending: false });
+                // Fetch gallery items for this athlete
+                const { data: gal } = await window.db.from('gallery').select('*').eq('athlete_id', ath.id);
+
+                this.athletes.push({
+                  id: ath.id,
+                  name: ath.name,
+                  initials: ath.initials,
+                  highSchool: ath.high_school,
+                  state: ath.state,
+                  position: ath.position,
+                  photoUrl: ath.photo_url,
+                  evaluations: evals ? evals.map(e => ({ id: e.id, date: e.date, evaluator: e.evaluator, metrics: e.metrics })) : [],
+                  gallery: gal ? gal.map(g => ({ url: g.url, title: g.title, date: g.date })) : []
+                });
+              }
+            } else {
+              // Seed initial test athlete if database is completely empty
+              await this.seedInitialAthlete();
+            }
+          } catch(e) { console.error(e); }
+        },
+
+        async seedInitialAthlete() {
+          const testAth = {
+            id: 'ATH-1',
+            name: 'DeAndre Carter',
+            initials: 'DC',
+            high_school: 'Saguaro HS',
+            state: 'AZ',
+            position: 'WR',
+            photo_url: ''
+          };
+          await window.db.from('athletes').insert([testAth]);
+          await window.db.from('evaluations').insert([{
+            athlete_id: 'ATH-1',
+            date: '2026-09-01',
+            evaluator: 'Coach Vance',
+            metrics: { 'Route Running': { score: 94 }, 'forty': { value: '4.42', media: '' } }
+          }]);
+          await this.loadAthletesFromDatabase();
         },
 
         get filteredAthletes() {
@@ -879,7 +923,6 @@
           try {
               const { data } = await window.db.from('users').select('*').eq('is_approved', true).eq('role', 'vp').order('created_at', { ascending: false });
               if (data && data.length > 0) this.vpDirectoryList = data;
-              else this.vpDirectoryList = [{id:'vp1', full_name: 'Marquis Savage', title_or_org: 'NextGen Athletix', bio: 'Founder', is_private: false}];
           } catch(e) { console.log(e); }
         },
 
@@ -951,7 +994,6 @@
         selectAthlete(athlete) { this.selectedAthlete = athlete; this.setView('profile'); },
         selectVp(vp) { this.selectedVp = vp; this.setView('vp_profile_view'); },
 
-        // DIRECT UPLOAD TO SUPABASE BUCKET
         async uploadFileToSupabase(file) {
           if(!file || !window.db) return null;
           const fileExt = file.name.split('.').pop();
@@ -972,20 +1014,24 @@
             uploadedUrl = await this.uploadFileToSupabase(photoInput.files[0]);
           }
 
-          const newAth = {
-            id: 'ATH-' + Date.now(),
+          const athleteId = 'ATH-' + Date.now();
+          const newDbAth = {
+            id: athleteId,
             name: `${this.newAthleteForm.firstName} ${this.newAthleteForm.lastName}`,
             initials: this.newAthleteForm.firstName[0] + this.newAthleteForm.lastName[0],
             position: this.newAthleteForm.position,
-            highSchool: this.newAthleteForm.highSchool,
-            photoUrl: uploadedUrl,
-            gallery: [],
-            evaluations: []
+            high_school: this.newAthleteForm.highSchool,
+            state: 'AZ',
+            photo_url: uploadedUrl
           };
-          this.athletes.unshift(newAth);
-          alert('Profile Created!');
+
+          const { error } = await window.db.from('athletes').insert([newDbAth]);
+          if (error) { alert('Error creating athlete: ' + error.message); return; }
+
+          alert('Profile Created Successfully in Database!');
           this.newAthleteForm = { firstName: '', lastName: '', position: 'WR', highSchool: '' };
           if(photoInput) photoInput.value = "";
+          await this.loadAthletesFromDatabase();
         },
 
         async submitGalleryMedia() {
@@ -996,18 +1042,23 @@
           const mediaUrl = await this.uploadFileToSupabase(fileInput.files[0]);
           if(!mediaUrl) return;
 
-          const ath = this.athletes.find(a => a.id === this.galleryForm.athleteId);
-          if(ath) {
-             ath.gallery.unshift({ url: mediaUrl, title: this.galleryForm.title, date: new Date().toISOString().split('T')[0] });
-             alert('Media successfully added to Gallery!');
-          }
+          const { error } = await window.db.from('gallery').insert([{
+            athlete_id: this.galleryForm.athleteId,
+            url: mediaUrl,
+            title: this.galleryForm.title,
+            date: new Date().toISOString().split('T')[0]
+          }]);
+
+          if (error) { alert('Error uploading gallery media: ' + error.message); return; }
+
+          alert('Media successfully added to Gallery!');
           this.galleryForm = { athleteId: '', title: '' };
           fileInput.value = '';
+          await this.loadAthletesFromDatabase();
         },
 
         async submitEvaluation() {
           if (!this.evalForm.athleteId) return alert('Select an athlete');
-          const ath = this.athletes.find(a => a.id === this.evalForm.athleteId);
           let logMetrics = {};
 
           if (this.evalMode === 'scouting') {
@@ -1026,9 +1077,19 @@
             }
           }
           if (Object.keys(logMetrics).length === 0) return alert('Enter at least one metric.');
-          ath.evaluations.unshift({ id: Date.now(), date: new Date().toISOString().split('T')[0], evaluator: this.currentUser ? this.currentUser.name : 'Admin', metrics: logMetrics });
+
+          const { error } = await window.db.from('evaluations').insert([{
+            athlete_id: this.evalForm.athleteId,
+            date: new Date().toISOString().split('T')[0],
+            evaluator: this.currentUser ? this.currentUser.name : 'Admin',
+            metrics: logMetrics
+          }]);
+
+          if (error) { alert('Error publishing report: ' + error.message); return; }
+
           alert('Verified Metrics Published!');
           this.resetEvalForm();
+          await this.loadAthletesFromDatabase();
         },
 
         resetEvalForm() {
@@ -1043,28 +1104,29 @@
           return ath ? (this.positionCategories[ath.position] || []) : [];
         },
 
-        // Dashboard Retrieval Helpers
         getLatestMetricScore(ath, key) {
-          const log = ath.evaluations.find(e => e.metrics[key]);
+          const log = ath.evaluations.find(e => e.metrics && e.metrics[key]);
           return log ? log.metrics[key].score : null;
         },
         getLatestMetricValue(ath, key) {
-          const log = ath.evaluations.find(e => e.metrics[key]);
+          const log = ath.evaluations.find(e => e.metrics && e.metrics[key]);
           return log ? log.metrics[key].value : null;
         },
         getLatestMetricPhoto(ath, key) {
-          const log = ath.evaluations.find(e => e.metrics[key]);
+          const log = ath.evaluations.find(e => e.metrics && e.metrics[key]);
           return log ? log.metrics[key].media : null;
         },
         getOverallScore(ath) {
           let scores = [];
+          if (!ath.evaluations) return 'N/A';
           ath.evaluations.forEach(e => {
-            Object.values(e.metrics).forEach(m => { if(m.score) scores.push(parseInt(m.score)); })
+            if (e.metrics) {
+              Object.values(e.metrics).forEach(m => { if(m && m.score) scores.push(parseInt(m.score)); })
+            }
           });
           return scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : 'N/A';
         },
 
-        // Detailed Graph Modal Logic
         openMetricHistory(key, label) {
           this.activeMetricKey = key;
           this.activeMetricName = label || key;
@@ -1075,7 +1137,7 @@
 
           const sortedEvals = [...this.selectedAthlete.evaluations].reverse();
           sortedEvals.forEach(log => {
-            if (log.metrics[key]) {
+            if (log.metrics && log.metrics[key]) {
               const val = log.metrics[key].score || log.metrics[key].value;
               this.activeMetricLogs.unshift({ date: log.date, evaluator: log.evaluator, val: val, media: log.metrics[key].media });
               labels.push(log.date);
