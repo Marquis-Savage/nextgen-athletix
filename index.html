@@ -28,75 +28,86 @@
 <body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex flex-col justify-between" x-data="appData()">
 
   <!-- TOP NAVIGATION BAR -->
-  <header class="border-b border-slate-200 bg-white/95 backdrop-blur sticky top-0 z-50 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+  <header class="border-b border-slate-200 bg-white/95 backdrop-blur sticky top-0 z-50 shadow-sm py-3">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-4">
       
       <!-- Logo Branding -->
-      <div class="flex items-center space-x-3 cursor-pointer" @click="setView('home')">
-        <div class="h-[66px] w-[66px] flex items-center justify-center shrink-0">
-          <img src="NGAwht.jpg" alt="NextGen Athletix Logo" class="h-full w-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'bg-indigo-600 text-white font-black text-xs p-2 rounded-lg\'>NGA</div>';"/>
-        </div>
-        <div>
-          <div class="flex items-center space-x-1.5">
-            <span class="font-black text-xl tracking-tight text-slate-900">NEXTGEN</span>
-            <span class="font-black text-xl tracking-tight text-indigo-600">ATHLETIX</span>
+      <div class="flex items-center space-x-3 cursor-pointer w-full lg:w-auto justify-between lg:justify-start" @click="setView('home')">
+        <div class="flex items-center space-x-3">
+          <div class="h-12 w-12 flex items-center justify-center shrink-0">
+            <img src="NGAwht.jpg" alt="NextGen Athletix Logo" class="h-full w-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'bg-indigo-600 text-white font-black text-xs p-2 rounded-lg\'>NGA</div>';"/>
           </div>
-          <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block -mt-1">Verified Scouting Network</span>
+          <div>
+            <div class="flex items-center space-x-1">
+              <span class="font-black text-lg tracking-tight text-slate-900">NEXTGEN</span>
+              <span class="font-black text-lg tracking-tight text-indigo-600">ATHLETIX</span>
+            </div>
+            <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest block">Verified Scouting</span>
+          </div>
+        </div>
+
+        <!-- Mobile Auth (Visible only on small screens) -->
+        <div class="lg:hidden">
+           <template x-if="currentUser">
+             <button type="button" @click="handleSignOut()" class="px-3 py-1.5 bg-rose-50 text-rose-600 text-[10px] font-bold rounded-lg">Sign Out</button>
+           </template>
+           <template x-if="!currentUser">
+             <button type="button" @click="showAuthModal = true" class="p-2 bg-indigo-600 text-white rounded-lg"><i data-lucide="lock" class="w-4 h-4"></i></button>
+           </template>
         </div>
       </div>
 
-      <!-- Main Navigation -->
-      <nav class="flex items-center space-x-1 xl:space-x-2 overflow-x-auto hide-scrollbar">
-        <button type="button" @click="setView('home')" :class="currentView === 'home' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 shrink-0">
-          <i data-lucide="home" class="w-4 h-4"></i><span class="hidden xl:inline">Home</span>
+      <!-- Main Navigation (Stacked/Wrapping) -->
+      <nav class="flex flex-wrap items-center justify-center gap-2 w-full lg:w-auto">
+        <button type="button" @click="setView('home')" :class="currentView === 'home' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
+          <i data-lucide="home" class="w-3.5 h-3.5"></i><span>Home</span>
         </button>
 
-        <button type="button" @click="setView('search')" :class="currentView === 'search' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 shrink-0">
-          <i data-lucide="database" class="w-4 h-4"></i><span class="hidden sm:inline">Athlete Database</span>
+        <button type="button" @click="setView('search')" :class="currentView === 'search' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
+          <i data-lucide="database" class="w-3.5 h-3.5"></i><span>Athlete Database</span>
         </button>
 
-        <button type="button" @click="setView('vp_directory')" :class="currentView === 'vp_directory' || currentView === 'vp_profile_view' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 shrink-0">
-          <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i><span class="hidden sm:inline">Personnel Directory</span>
+        <button type="button" @click="setView('vp_directory')" :class="currentView === 'vp_directory' || currentView === 'vp_profile_view' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
+          <i data-lucide="users" class="w-3.5 h-3.5 text-emerald-600"></i><span>Verified Personnel Directory</span>
         </button>
         
-        <button type="button" @click="setView('stats')" :class="currentView === 'stats' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 shrink-0">
-          <i data-lucide="bar-chart" class="w-4 h-4 text-amber-500"></i><span class="hidden sm:inline">External Stats</span>
+        <button type="button" @click="setView('stats')" :class="currentView === 'stats' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
+          <i data-lucide="bar-chart" class="w-3.5 h-3.5 text-amber-500"></i><span>External Stats</span>
         </button>
 
-        <button type="button" @click="setView('sponsor')" :class="currentView === 'sponsor' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 shrink-0">
-          <i data-lucide="award" class="w-4 h-4 text-amber-500"></i><span class="hidden sm:inline">Sponsor</span>
+        <button type="button" @click="setView('sponsor')" :class="currentView === 'sponsor' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
+          <i data-lucide="award" class="w-3.5 h-3.5 text-amber-500"></i><span>Become a Sponsor</span>
         </button>
 
-        <button type="button" @click="setView('vp_portal')" :class="currentView === 'vp_portal' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 shrink-0">
-          <i data-lucide="user-check" class="w-4 h-4 text-indigo-600"></i><span class="hidden xl:inline">VP Portal</span>
+        <button type="button" @click="setView('vp_portal')" :class="currentView === 'vp_portal' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
+          <i data-lucide="user-check" class="w-3.5 h-3.5 text-indigo-600"></i><span>VP Portal</span>
         </button>
 
-        <!-- Admin Tab -->
         <template x-if="currentUser && currentUser.role === 'admin'">
-          <button type="button" @click="setView('admin')" :class="currentView === 'admin' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 shrink-0">
-            <i data-lucide="shield" class="w-4 h-4 text-rose-600"></i><span class="hidden xl:inline">Admin</span>
+          <button type="button" @click="setView('admin')" :class="currentView === 'admin' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
+            <i data-lucide="shield" class="w-3.5 h-3.5 text-rose-600"></i><span>Admin</span>
           </button>
         </template>
 
-        <button type="button" @click="setView('about')" :class="currentView === 'about' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 shrink-0">
-          <i data-lucide="info" class="w-4 h-4"></i><span class="hidden xl:inline">About</span>
+        <button type="button" @click="setView('about')" :class="currentView === 'about' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
+          <i data-lucide="info" class="w-3.5 h-3.5"></i><span>About</span>
         </button>
       </nav>
 
-      <!-- USER AUTH HEADER STATUS -->
-      <div class="flex items-center space-x-3">
+      <!-- Desktop Auth Header -->
+      <div class="hidden lg:flex items-center space-x-3 shrink-0">
         <template x-if="currentUser">
           <div class="flex items-center space-x-3 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-2xl">
-            <div class="text-right hidden md:block">
+            <div class="text-right">
               <span class="text-xs font-bold text-slate-900 block" x-text="'Hello, ' + currentUser.name"></span>
               <span class="text-[10px] font-semibold text-indigo-600 block uppercase" x-text="currentUser.org || 'Independent'"></span>
             </div>
-            <button type="button" @click="handleSignOut()" class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold rounded-xl transition cursor-pointer">Sign Out</button>
+            <button type="button" @click="handleSignOut()" class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold rounded-xl transition">Sign Out</button>
           </div>
         </template>
         <template x-if="!currentUser">
-          <button type="button" @click="showAuthModal = true" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center space-x-1.5 shrink-0">
-            <i data-lucide="lock" class="w-3.5 h-3.5"></i><span class="hidden md:inline">Sign In / Register</span>
+          <button type="button" @click="showAuthModal = true" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center space-x-1.5">
+            <i data-lucide="lock" class="w-3.5 h-3.5"></i><span>Sign In / Register</span>
           </button>
         </template>
       </div>
@@ -185,7 +196,6 @@
 
       <!-- News Section -->
       <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- High School -->
         <div>
           <h2 class="text-lg font-black text-slate-900 mb-4 border-b border-slate-200 pb-2">High School Sports News (USA)</h2>
           <div class="space-y-4">
@@ -199,7 +209,6 @@
             </div>
           </div>
         </div>
-        <!-- College -->
         <div>
           <h2 class="text-lg font-black text-slate-900 mb-4 border-b border-slate-200 pb-2">College Sports News (USA)</h2>
           <div class="space-y-4">
@@ -390,15 +399,27 @@
       <div class="bg-white border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-sm">
         <div class="flex items-center justify-between mb-6">
            <h3 class="text-xl font-bold text-slate-900">Submit Sponsorship Inquiry</h3>
-           <span class="bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wide">Valid for 365 Days</span>
         </div>
-        <p class="text-xs text-slate-500 mb-6">All approved sponsorships are valid for 1 full year (365 days) from the date of donation/activation.</p>
+        <p class="text-xs text-slate-500 mb-6 bg-slate-50 p-3 rounded border border-slate-200">
+           Tier 1 & 2 sponsorships are valid for 365 days from the date of donation. Tier 3 sponsorships are valid for 548 days. Admin will review and reach out to you directly regarding your inquiry.
+        </p>
         <form @submit.prevent="submitSponsorForm()" class="space-y-4">
           <div class="grid grid-cols-2 gap-4">
             <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Organization Name</label><input type="text" x-model="sponsorForm.orgName" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800"></div>
             <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Contact Name</label><input type="text" x-model="sponsorForm.contactName" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800"></div>
           </div>
-          <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Phone or Email</label><input type="text" x-model="sponsorForm.contactInfo" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800"></div>
+          <div class="grid grid-cols-2 gap-4">
+             <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Phone or Email</label><input type="text" x-model="sponsorForm.contactInfo" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800"></div>
+             <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Interested Tier</label>
+                <select x-model="sponsorForm.tier" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+                   <option value="Tier 1">Tier 1 - Local Academy Partner</option>
+                   <option value="Tier 2">Tier 2 - State Showcase Sponsor</option>
+                   <option value="Tier 3">Tier 3 - National Title Partner</option>
+                </select>
+             </div>
+          </div>
+          <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Additional Info for Admin</label><textarea x-model="sponsorForm.additionalInfo" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800" placeholder="Optional context or questions..."></textarea></div>
           <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">Submit Inquiry to Founder</button>
         </form>
       </div>
@@ -465,6 +486,33 @@
           </div>
         </div>
       </div>
+
+      <!-- NEW: Full Width Gallery Section -->
+      <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 mb-4 border-b pb-2">Gallery & Highlights</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+           <template x-for="media in selectedAthlete.gallery" :key="media.url">
+              <div class="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-sm relative group">
+                 <!-- Simple check to render video vs image based on extension or fallback -->
+                 <template x-if="media.url.match(/\.(mp4|webm|ogg)$/i)">
+                    <video :src="media.url" controls class="w-full h-40 object-cover"></video>
+                 </template>
+                 <template x-if="!media.url.match(/\.(mp4|webm|ogg)$/i)">
+                    <img :src="media.url" class="w-full h-40 object-cover group-hover:scale-105 transition duration-300">
+                 </template>
+                 <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-900/80 to-transparent p-3 pt-6">
+                    <span class="block text-white font-bold text-xs truncate" x-text="media.title"></span>
+                    <span class="block text-slate-300 text-[10px]" x-text="media.date"></span>
+                 </div>
+              </div>
+           </template>
+           <template x-if="!selectedAthlete.gallery || selectedAthlete.gallery.length === 0">
+              <div class="col-span-full py-8 text-center text-slate-400 text-sm font-medium border-2 border-dashed border-slate-200 rounded-2xl">
+                 No media uploaded to this prospect's gallery yet.
+              </div>
+           </template>
+        </div>
+      </div>
     </div>
 
     <!-- METRIC HISTORY MODAL (Graph & Logs) -->
@@ -513,9 +561,10 @@
       <!-- Authenticated Portal View -->
       <template x-if="currentUser && (currentUser.role === 'vp' || currentUser.role === 'admin')">
         <div class="space-y-8">
-          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex items-center space-x-3">
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-wrap items-center gap-3">
             <button type="button" @click="activeVpTab = 'add'" :class="activeVpTab === 'add' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl">Add Athlete</button>
             <button type="button" @click="activeVpTab = 'update'" :class="activeVpTab === 'update' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl">Submit Grades</button>
+            <button type="button" @click="activeVpTab = 'gallery_upload'" :class="activeVpTab === 'gallery_upload' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl">Gallery Upload</button>
             <button type="button" @click="activeVpTab = 'profile'" :class="activeVpTab === 'profile' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl">My Profile</button>
           </div>
 
@@ -560,7 +609,7 @@
                 <button type="button" @click="evalMode = 'physical'" :class="evalMode === 'physical' ? 'border-indigo-600 text-indigo-600 border-b-2' : 'text-slate-400'" class="pb-2 text-xs font-bold uppercase flex-1">Physical Tests</button>
               </div>
 
-              <!-- Physical Tests with Uploads -->
+              <!-- Physical Tests -->
               <div x-show="evalMode === 'physical'" class="space-y-6">
                 <div>
                   <h4 class="text-sm font-bold text-slate-900 mb-2 border-b pb-1">Combine Tests</h4>
@@ -592,8 +641,31 @@
 
               <button type="button" @click="submitEvaluation()" class="w-full py-3 mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition">Publish Verified Report</button>
             </div>
+
+            <!-- NEW: Gallery Upload Tab -->
+            <div x-show="activeVpTab === 'gallery_upload'">
+               <h3 class="text-lg font-bold text-slate-900 mb-4">Submit Media to Gallery</h3>
+               <form @submit.prevent="submitGalleryMedia()" class="space-y-4">
+                 <div>
+                   <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Select Athlete</label>
+                   <select x-model="galleryForm.athleteId" required class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs font-bold">
+                     <option value="">-- Select Athlete --</option>
+                     <template x-for="ath in athletes" :key="ath.id"><option :value="ath.id" x-text="ath.name + ' (' + ath.position + ')'"></option></template>
+                   </select>
+                 </div>
+                 <div>
+                   <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Media Caption / Title</label>
+                   <input type="text" x-model="galleryForm.title" placeholder="e.g. 2026 State Championship Highlights" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs">
+                 </div>
+                 <div>
+                   <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Upload Photo / Video</label>
+                   <input type="file" id="galleryUploadInput" accept="image/*,video/*" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs">
+                 </div>
+                 <button type="submit" class="w-full py-3 bg-indigo-600 text-white font-bold text-xs rounded-xl shadow-md">Publish to Gallery</button>
+               </form>
+            </div>
             
-            <!-- VP Profile Tab (WITH DIRECT PHOTO UPLOAD & PRIVACY TOGGLE) -->
+            <!-- VP Profile Tab -->
             <div x-show="activeVpTab === 'profile'">
               <h3 class="text-lg font-bold text-slate-900 mb-4">Edit Personnel Profile</h3>
               <form @submit.prevent="updateVpProfile()" class="space-y-4">
@@ -670,27 +742,6 @@
       </template>
     </div>
 
-    <!-- VIEW: ABOUT US (MOVED TO END) -->
-    <div x-show="currentView === 'about'" x-cloak class="max-w-4xl mx-auto space-y-8">
-      <div class="bg-white border border-slate-200 rounded-3xl p-8 sm:p-12 shadow-md text-center">
-        <h1 class="text-3xl sm:text-4xl font-black text-slate-900 mb-6">Pioneering the Future of Scouting</h1>
-        <div class="w-16 h-1 bg-indigo-600 mx-auto mb-8"></div>
-        <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6 text-left">
-          NextGen Athletix was founded to introduce a transformative element to the athletic journey—opening doors for athletes, trainers, and coaches alike. While traditional platforms settle for basic stat tracking, NextGen Athletix is engineered to do more.
-        </p>
-        <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6 text-left">
-          We provide deep, verified performance analytics, advanced metrics, and a comprehensive scouting network designed to make the overall sports landscape more accurate, highly detailed, and rich with opportunity. Our platform goes beyond the numbers, delivering real insights to decision-makers and leveling the playing field for talent across the nation.
-        </p>
-        <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-10 text-left font-bold text-indigo-900">
-          My goal is to build the ultimate athlete evaluation ecosystem and propel sports into the future. Thank you for joining the revolution.
-        </p>
-        <div class="text-left border-t border-slate-100 pt-6">
-          <p class="font-black text-lg text-slate-900">— Marquis Savage</p>
-          <p class="text-xs font-bold text-indigo-600 uppercase tracking-widest mt-1">Founder & CEO, NextGen Athletix</p>
-        </div>
-      </div>
-    </div>
-
   </main>
   
   <footer class="border-t border-slate-200 bg-white py-6 mt-12 text-center text-xs text-slate-500 font-black tracking-widest">NEXTGEN ATHLETIX &copy; 2026</footer>
@@ -718,11 +769,12 @@
         // Forms
         authForm: { email: '', password: '', fullName: '', orgName: '', phone: '' },
         vpProfileForm: { name: '', org: '', phone: '', bio: '', photoUrl: '', isPrivate: false },
-        sponsorForm: { orgName: '', contactName: '', contactInfo: '' },
+        sponsorForm: { orgName: '', contactName: '', contactInfo: '', tier: 'Tier 1', additionalInfo: '' },
         
         evalMode: 'scouting',
         newAthleteForm: { firstName: '', lastName: '', position: 'WR', highSchool: '' },
         evalForm: { athleteId: '', scouting: {}, physical: {}, anthro: {} },
+        galleryForm: { athleteId: '', title: '' },
 
         physicalTestsList: [
           { key: 'forty', label: '40-Yard Dash (s)', placeholder: '4.45' },
@@ -752,19 +804,19 @@
         vpDirectoryList: [],
         pendingApplicants: [],
 
-        // Mock DB
+        // Mock DB for Layout Testing (Needs to be migrated to Postgres for permanence)
         athletes: [
-          { id: 'ATH-1', name: 'DeAndre Carter', initials: 'DC', highSchool: 'Saguaro HS', state: 'AZ', position: 'WR', photoUrl: '', evaluations: [
+          { id: 'ATH-1', name: 'DeAndre Carter', initials: 'DC', highSchool: 'Saguaro HS', state: 'AZ', position: 'WR', photoUrl: '', gallery: [{url: 'https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=400', title: 'State Champs', date: '2026-10-20'}], evaluations: [
             { id: 1, date: '2026-09-01', evaluator: 'Coach Vance', metrics: { 'Route Running': { score: 94 }, 'forty': { value: '4.42', media: 'https://example.com/video.mp4' } } },
             { id: 2, date: '2026-10-15', evaluator: 'Coach Vance', metrics: { 'Route Running': { score: 96 }, 'forty': { value: '4.38' } } }
           ]},
-          { id: 'ATH-2', name: 'Javon Mitchell', initials: 'JM', highSchool: 'Chandler HS', state: 'AZ', position: 'RB', photoUrl: '', evaluations: [
+          { id: 'ATH-2', name: 'Javon Mitchell', initials: 'JM', highSchool: 'Chandler HS', state: 'AZ', position: 'RB', photoUrl: '', gallery: [], evaluations: [
             { id: 3, date: '2026-10-02', evaluator: 'Coach Miller', metrics: { 'Vision': { score: 88 }, 'forty': { value: '4.55' }, 'vertical': { value: '34' } } }
           ]},
-          { id: 'ATH-3', name: 'Elijah Brown', initials: 'EB', highSchool: 'Basha HS', state: 'AZ', position: 'QB', photoUrl: '', evaluations: [
+          { id: 'ATH-3', name: 'Elijah Brown', initials: 'EB', highSchool: 'Basha HS', state: 'AZ', position: 'QB', photoUrl: '', gallery: [], evaluations: [
             { id: 4, date: '2026-10-10', evaluator: 'Coach Smith', metrics: { 'Arm Strength': { score: 92 }, 'Accuracy': { score: 90 } } }
           ]},
-          { id: 'ATH-4', name: 'Mason Taylor', initials: 'MT', highSchool: 'Hamilton HS', state: 'AZ', position: 'LB', photoUrl: '', evaluations: [
+          { id: 'ATH-4', name: 'Mason Taylor', initials: 'MT', highSchool: 'Hamilton HS', state: 'AZ', position: 'LB', photoUrl: '', gallery: [], evaluations: [
             { id: 5, date: '2026-10-12', evaluator: 'Coach Jones', metrics: { 'Tackling': { score: 85 } } }
           ]}
         ],
@@ -779,7 +831,6 @@
             this.checkSession();
             this.loadVerifiedPersonnel();
           } else {
-             // Fallback mock for testing layout without backend connection
              this.vpDirectoryList = [{id:'vp1', full_name: 'Marquis Savage', title_or_org: 'NextGen Athletix Founder', bio: 'Creator of the ultimate scouting network.', email: 'test@test.com', is_private: false}];
           }
           this.resetEvalForm();
@@ -865,7 +916,6 @@
         
         async updateVpProfile() {
           if(!window.db) return;
-          
           let uploadedUrl = this.vpProfileForm.photoUrl;
           const photoInput = document.getElementById('vpPhotoInput');
           if (photoInput && photoInput.files.length > 0) {
@@ -888,8 +938,8 @@
         async rejectPersonnel(id) { await window.db.from('users').delete().eq('id', id); this.loadAdminData(); },
 
         submitSponsorForm() {
-          alert('Inquiry Submitted! Sponsorships are active for 365 days upon approval.');
-          this.sponsorForm = { orgName: '', contactName: '', contactInfo: '' };
+          alert('Inquiry Submitted! Admin will review your request and reach out directly.');
+          this.sponsorForm = { orgName: '', contactName: '', contactInfo: '', tier: 'Tier 1', additionalInfo: '' };
         },
 
         setView(view) { 
@@ -929,12 +979,30 @@
             position: this.newAthleteForm.position,
             highSchool: this.newAthleteForm.highSchool,
             photoUrl: uploadedUrl,
+            gallery: [],
             evaluations: []
           };
           this.athletes.unshift(newAth);
           alert('Profile Created!');
           this.newAthleteForm = { firstName: '', lastName: '', position: 'WR', highSchool: '' };
           if(photoInput) photoInput.value = "";
+        },
+
+        async submitGalleryMedia() {
+          if(!this.galleryForm.athleteId) return alert('Select an athlete');
+          const fileInput = document.getElementById('galleryUploadInput');
+          if(!fileInput || fileInput.files.length === 0) return alert('Please attach a media file.');
+          
+          const mediaUrl = await this.uploadFileToSupabase(fileInput.files[0]);
+          if(!mediaUrl) return;
+
+          const ath = this.athletes.find(a => a.id === this.galleryForm.athleteId);
+          if(ath) {
+             ath.gallery.unshift({ url: mediaUrl, title: this.galleryForm.title, date: new Date().toISOString().split('T')[0] });
+             alert('Media successfully added to Gallery!');
+          }
+          this.galleryForm = { athleteId: '', title: '' };
+          fileInput.value = '';
         },
 
         async submitEvaluation() {
