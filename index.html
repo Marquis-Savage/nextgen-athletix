@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NextGen Athletics - Verified Youth to College Football Intelligence</title>
+  <title>NextGen Athletix - Verified Youth to College Football Intelligence</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -16,6 +16,9 @@
 
   <!-- Supabase Database & Auth SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Chart.js for Progression Graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     [x-cloak] { display: none !important; }
@@ -32,7 +35,7 @@
         <div class="h-[66px] w-[66px] flex items-center justify-center shrink-0">
           <img 
             src="NGAwht.jpg" 
-            alt="NextGen Athletics Logo" 
+            alt="NextGen Athletix Logo" 
             class="h-full w-full object-contain"
             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'bg-indigo-600 text-white font-black text-xs p-2 rounded-lg\'>NGA</div>';"
           />
@@ -40,7 +43,7 @@
         <div>
           <div class="flex items-center space-x-1.5">
             <span class="font-black text-xl tracking-tight text-slate-900">NEXTGEN</span>
-            <span class="font-black text-xl tracking-tight text-indigo-600">ATHLETICS</span>
+            <span class="font-black text-xl tracking-tight text-indigo-600">ATHLETIX</span>
           </div>
           <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block -mt-1">Verified Scouting Network</span>
         </div>
@@ -55,12 +58,12 @@
 
         <button type="button" @click="setView('search')" :class="currentView === 'search' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 cursor-pointer">
           <i data-lucide="database" class="w-4 h-4"></i>
-          <span>Athlete Database</span>
+          <span>Database</span>
         </button>
 
         <button type="button" @click="setView('vp_directory')" :class="currentView === 'vp_directory' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 cursor-pointer">
           <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i>
-          <span>Verified Directory</span>
+          <span>VP Directory</span>
         </button>
 
         <button type="button" @click="setView('vp_portal')" :class="currentView === 'vp_portal' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 cursor-pointer">
@@ -68,12 +71,7 @@
           <span>VP Portal</span>
         </button>
 
-        <button type="button" @click="setView('sponsor')" :class="currentView === 'sponsor' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 cursor-pointer">
-          <i data-lucide="award" class="w-4 h-4 text-amber-500"></i>
-          <span>Become a Sponsor</span>
-        </button>
-
-        <!-- Admin Tab (Only visible if currentUser is admin) -->
+        <!-- Admin Tab -->
         <template x-if="currentUser && currentUser.role === 'admin'">
           <button type="button" @click="setView('admin')" :class="currentView === 'admin' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 cursor-pointer">
             <i data-lucide="shield" class="w-4 h-4 text-rose-600"></i>
@@ -88,7 +86,7 @@
           <div class="flex items-center space-x-3 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-2xl">
             <div class="text-right">
               <span class="text-xs font-bold text-slate-900 block" x-text="'Hello, ' + currentUser.name"></span>
-              <span class="text-[10px] font-semibold text-indigo-600 block uppercase" x-text="currentUser.role === 'admin' ? 'Administrator' : 'Verified VP'"></span>
+              <span class="text-[10px] font-semibold text-indigo-600 block uppercase" x-text="currentUser.org || 'Independent'"></span>
             </div>
             <button type="button" @click="handleSignOut()" class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold rounded-xl transition cursor-pointer">
               Sign Out
@@ -103,7 +101,6 @@
           </button>
         </template>
       </div>
-
     </div>
   </header>
 
@@ -119,9 +116,6 @@
 
       <!-- Sign In Form -->
       <div x-show="authTab === 'signin'">
-        <h3 class="text-lg font-bold text-slate-900 mb-1">Sign In to Account</h3>
-        <p class="text-xs text-slate-500 mb-4">Access the Verified Personnel workspace or Admin dashboard.</p>
-
         <form @submit.prevent="handleSignIn()" class="space-y-4">
           <div>
             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
@@ -131,17 +125,13 @@
             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label>
             <input type="password" x-model="authForm.password" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
           </div>
-          <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition shadow-md cursor-pointer">
-            Sign In
-          </button>
+          <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition shadow-md cursor-pointer">Sign In</button>
         </form>
       </div>
 
       <!-- Registration Form -->
       <div x-show="authTab === 'register'">
-        <h3 class="text-lg font-bold text-slate-900 mb-1">Register as Verified Personnel</h3>
-        <p class="text-xs text-slate-500 mb-4">Account requires admin verification before publishing scores.</p>
-
+        <p class="text-[10px] text-slate-500 mb-4 bg-slate-50 p-2 rounded border border-slate-200">Admin requires contact info for verification before publishing scores.</p>
         <form @submit.prevent="handleRegistration()" class="space-y-4">
           <div>
             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Full Name</label>
@@ -149,29 +139,32 @@
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Organization / Academy</label>
-            <input type="text" x-model="authForm.orgName" placeholder="e.g. Saguaro HS / Apex Speed" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+            <input type="text" x-model="authForm.orgName" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
-            <input type="email" x-model="authForm.email" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Direct Phone Number</label>
+            <input type="tel" x-model="authForm.phone" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
           </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label>
-            <input type="password" x-model="authForm.password" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
+              <input type="email" x-model="authForm.email" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label>
+              <input type="password" x-model="authForm.password" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+            </div>
           </div>
-          <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow-md cursor-pointer">
-            Submit Registration
-          </button>
+          <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow-md cursor-pointer">Submit Registration</button>
         </form>
       </div>
-
     </div>
   </div>
 
   <!-- MAIN CONTENT CONTAINER -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
 
-    <!-- VIEW 1: WELCOMING HOME PAGE -->
+    <!-- VIEW 1: HOME PAGE -->
     <div x-show="currentView === 'home'" x-cloak class="space-y-12">
       <section class="bg-gradient-to-br from-indigo-950 via-indigo-900 to-slate-900 rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden">
         <div class="max-w-3xl relative z-10 space-y-4">
@@ -180,180 +173,40 @@
               <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
               <span>Youth Leagues to College Signing Day</span>
             </span>
-            <span class="px-3 py-1 bg-indigo-500/30 border border-indigo-400/30 text-indigo-200 text-xs font-bold rounded-full">
-              Pop Warner • Middle School • Varsity • Combines
-            </span>
           </div>
-          
-          <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
-            Verified Athletic Tracking From Day One.
-          </h1>
-          
-          <p class="text-indigo-100 text-sm sm:text-base leading-relaxed">
-            NextGen Athletics provides a standardized, verified performance portfolio for young athletes starting in youth developmental sports (ages 6+) and following their progression through high school varsity to college recruitment.
-          </p>
-
-          <div class="pt-4 flex flex-wrap gap-3">
-            <button type="button" @click="setView('search')" class="px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-xs sm:text-sm transition shadow-lg shadow-indigo-600/30 flex items-center space-x-2 cursor-pointer">
-              <i data-lucide="search" class="w-4 h-4"></i>
-              <span>Search Athlete Database</span>
-            </button>
-            <button type="button" @click="setView('vp_directory')" class="px-5 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl font-bold text-xs sm:text-sm transition flex items-center space-x-2 cursor-pointer">
-              <i data-lucide="users" class="w-4 h-4 text-emerald-400"></i>
-              <span>Find Verified Trainers & Coaches</span>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- FEATURED PROSPECTS ROW -->
-      <section>
-        <div class="flex items-center justify-between mb-6">
-          <div>
-            <h2 class="text-xl font-extrabold text-slate-900 flex items-center space-x-2">
-              <i data-lucide="award" class="w-5 h-5 text-indigo-600"></i>
-              <span>Featured Verified Prospects (Youth & Varsity)</span>
-            </h2>
-            <p class="text-xs text-slate-500">Documented performance progression across sanctioned youth leagues and high school varsity.</p>
-          </div>
-          <button type="button" @click="setView('search')" class="text-xs font-bold text-indigo-600 hover:underline">Explore Full Database &rarr;</button>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <template x-for="athlete in athletes.slice(0,3)" :key="athlete.id">
-            <div class="bg-white border border-slate-200 hover:border-indigo-300 rounded-2xl p-5 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col justify-between" @click="selectAthlete(athlete)">
-              <div>
-                <div class="flex items-start justify-between">
-                  <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg font-black text-indigo-600" x-text="athlete.initials"></div>
-                    <div>
-                      <h3 class="font-bold text-slate-900 text-base" x-text="athlete.name"></h3>
-                      <p class="text-xs text-slate-500" x-text="athlete.highSchool + ' • ' + athlete.state"></p>
-                    </div>
-                  </div>
-                  <div class="text-right">
-                    <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 font-bold text-xs rounded-lg block" x-text="athlete.position"></span>
-                    <span class="text-[10px] font-bold text-slate-400 mt-0.5 block" x-text="athlete.levelTag"></span>
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-slate-100 text-center">
-                  <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                    <span class="block text-[10px] font-bold text-slate-400 uppercase">40-Yard</span>
-                    <span class="font-black text-sm text-emerald-600" x-text="athlete.combine['40Yard'] + 's'"></span>
-                  </div>
-                  <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                    <span class="block text-[10px] font-bold text-slate-400 uppercase">Vertical</span>
-                    <span class="font-black text-sm text-slate-800" x-text="athlete.combine.vertical + 'in'"></span>
-                  </div>
-                  <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                    <span class="block text-[10px] font-bold text-slate-400 uppercase">Composite</span>
-                    <span class="font-black text-sm text-indigo-600" x-text="getAthleteOverallAvg(athlete) + ' / 100'"></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </template>
+          <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">Verified Athletic Tracking From Day One.</h1>
+          <p class="text-indigo-100 text-sm sm:text-base leading-relaxed">NextGen Athletix provides a standardized, verified performance portfolio for young athletes starting in youth developmental sports (ages 6+) and following their progression through high school varsity to college recruitment.</p>
         </div>
       </section>
     </div>
 
     <!-- VIEW 2: ATHLETE DATABASE -->
     <div x-show="currentView === 'search'" x-cloak class="space-y-6">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 class="text-2xl font-black text-slate-900">Athlete Database</h1>
-          <p class="text-xs text-slate-500">Browse verified prospects across youth developmental leagues, middle school, high school varsity, and combine events.</p>
-        </div>
+      <div>
+        <h1 class="text-2xl font-black text-slate-900">Athlete Database</h1>
+        <p class="text-xs text-slate-500">Browse verified prospects across youth developmental leagues, middle school, and varsity.</p>
       </div>
-
-      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
-          <div>
-            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Player Name</label>
-            <input type="text" x-model="searchQuery" placeholder="Search athlete..." class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-indigo-500">
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Development Tier</label>
-            <select x-model="filterLevel" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-indigo-500">
-              <option value="ALL">All Tiers (Youth to Varsity)</option>
-              <option value="Youth">Youth League (Ages 6-12)</option>
-              <option value="Middle School">Middle School (7th-8th Grade)</option>
-              <option value="Varsity">High School Varsity (9th-12th Grade)</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">State</label>
-            <select x-model="filterState" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-indigo-500">
-              <option value="ALL">All States</option>
-              <option value="AZ">Arizona (AZ)</option>
-              <option value="TX">Texas (TX)</option>
-              <option value="FL">Florida (FL)</option>
-              <option value="CA">California (CA)</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Position</label>
-            <select x-model="filterPosition" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-indigo-500">
-              <option value="ALL">All Positions</option>
-              <template x-for="pos in allFootballPositions" :key="pos.code">
-                <option :value="pos.code" x-text="pos.code + ' - ' + pos.name"></option>
-              </template>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Min Composite</label>
-            <select x-model="filterMinGrade" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-indigo-500">
-              <option value="0">Any Grade</option>
-              <option value="90">90+ Composite</option>
-              <option value="80">80+ Composite</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
+      
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <template x-for="athlete in filteredAthletes" :key="athlete.id">
+        <template x-for="athlete in athletes" :key="athlete.id">
           <div class="bg-white border border-slate-200 hover:border-indigo-300 rounded-2xl p-5 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col justify-between" @click="selectAthlete(athlete)">
-            <div>
-              <div class="flex items-start justify-between">
-                <div class="flex items-center space-x-3">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center space-x-3">
+                <template x-if="athlete.photoUrl">
+                  <img :src="athlete.photoUrl" class="w-12 h-12 rounded-xl object-cover border border-slate-200">
+                </template>
+                <template x-if="!athlete.photoUrl">
                   <div class="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg font-black text-indigo-600" x-text="athlete.initials"></div>
-                  <div>
-                    <h3 class="font-bold text-slate-900 text-base" x-text="athlete.name"></h3>
-                    <p class="text-xs text-slate-500" x-text="athlete.highSchool + ' • ' + athlete.state"></p>
-                  </div>
-                </div>
-                <div class="text-right">
-                  <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 font-bold text-xs rounded-lg block" x-text="athlete.position"></span>
-                  <span class="text-[10px] font-bold text-slate-400 mt-0.5 block" x-text="athlete.levelTag"></span>
+                </template>
+                <div>
+                  <h3 class="font-bold text-slate-900 text-base" x-text="athlete.name"></h3>
+                  <p class="text-xs text-slate-500" x-text="athlete.highSchool + ' • ' + athlete.state"></p>
                 </div>
               </div>
-
-              <div class="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-slate-100 text-center">
-                <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                  <span class="block text-[10px] font-bold text-slate-400 uppercase">40-Yard</span>
-                  <span class="font-black text-sm text-emerald-600" x-text="athlete.combine['40Yard'] + 's'"></span>
-                </div>
-                <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                  <span class="block text-[10px] font-bold text-slate-400 uppercase">Vertical</span>
-                  <span class="font-black text-sm text-slate-800" x-text="athlete.combine.vertical + 'in'"></span>
-                </div>
-                <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                  <span class="block text-[10px] font-bold text-slate-400 uppercase">Composite</span>
-                  <span class="font-black text-sm text-indigo-600" x-text="getAthleteOverallAvg(athlete) + ' / 100'"></span>
-                </div>
-              </div>
+              <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 font-bold text-xs rounded-lg block" x-text="athlete.position"></span>
             </div>
-            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
-              <span class="flex items-center space-x-1 text-emerald-600">
-                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
-                <span x-text="getEvaluatorCount(athlete) + ' VP Audits'"></span>
-              </span>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-medium">
+              <span class="text-emerald-600"><span x-text="athlete.evaluations.length"></span> Verified Logs</span>
               <span class="text-indigo-600 font-bold">View Profile &rarr;</span>
             </div>
           </div>
@@ -361,87 +214,51 @@
       </div>
     </div>
 
-    <!-- VIEW 3: ATHLETE PROFILE VIEW -->
+    <!-- VIEW 3: ATHLETE PROFILE VIEW WITH GRAPH -->
     <div x-show="currentView === 'profile'" x-cloak class="space-y-8" x-if="selectedAthlete">
       <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div class="flex items-center space-x-5">
-            <div class="w-20 h-20 rounded-2xl bg-indigo-600 text-white font-black text-2xl flex items-center justify-center shadow-lg shadow-indigo-200">
-              <span x-text="selectedAthlete ? selectedAthlete.initials : ''"></span>
-            </div>
-            <div>
-              <div class="flex items-center space-x-3">
-                <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900" x-text="selectedAthlete ? selectedAthlete.name : ''"></h1>
-                <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 font-bold text-xs rounded-full" x-text="selectedAthlete ? selectedAthlete.position : ''"></span>
-                <span class="px-2.5 py-1 bg-slate-100 text-slate-700 font-bold text-xs rounded-full" x-text="selectedAthlete ? selectedAthlete.levelTag : ''"></span>
-              </div>
-              <p class="text-slate-500 text-xs sm:text-sm mt-1" x-text="selectedAthlete ? selectedAthlete.highSchool + ' • ' + selectedAthlete.city + ', ' + selectedAthlete.state + ' • Class of ' + selectedAthlete.classYear + ' • Height: ' + selectedAthlete.height + ' | Weight: ' + selectedAthlete.weight + ' lbs' : ''"></p>
-            </div>
-          </div>
-
-          <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-2xl text-right">
-            <span class="text-[10px] font-bold uppercase text-indigo-600 block">NextGen Composite Rating</span>
-            <span class="text-3xl font-black text-indigo-700" x-text="selectedAthlete ? getAthleteOverallAvg(selectedAthlete) + ' / 100' : '0'"></span>
+        <div class="flex items-center space-x-5">
+          <template x-if="selectedAthlete.photoUrl">
+            <img :src="selectedAthlete.photoUrl" class="w-20 h-20 rounded-2xl object-cover shadow-md">
+          </template>
+          <template x-if="!selectedAthlete.photoUrl">
+            <div class="w-20 h-20 rounded-2xl bg-indigo-600 text-white font-black text-2xl flex items-center justify-center shadow-lg"><span x-text="selectedAthlete.initials"></span></div>
+          </template>
+          <div>
+            <h1 class="text-3xl font-extrabold text-slate-900" x-text="selectedAthlete.name"></h1>
+            <p class="text-slate-500 text-sm mt-1" x-text="selectedAthlete.position + ' • ' + selectedAthlete.highSchool"></p>
           </div>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="lg:col-span-2 space-y-8">
-          <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center space-x-2">
-              <i data-lucide="timer" class="w-5 h-5 text-indigo-600"></i>
-              <span>Combine & Biometric Metrics</span>
-            </h2>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                <span class="text-xs font-bold text-slate-400 uppercase block">40-Yard Dash</span>
-                <span class="text-3xl font-black text-emerald-600 mt-1 block" x-text="selectedAthlete ? selectedAthlete.combine['40Yard'] + 's' : ''"></span>
-                <p class="text-xs text-slate-500 mt-1" x-text="selectedAthlete ? 'Verified by ' + selectedAthlete.combine['40YardVerifiedBy'] : ''"></p>
-              </div>
-
-              <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                <span class="text-xs font-bold text-slate-400 uppercase block">Pro Shuttle</span>
-                <span class="text-3xl font-black text-slate-900 mt-1 block" x-text="selectedAthlete ? selectedAthlete.combine.shuttle + 's' : ''"></span>
-                <p class="text-xs text-slate-500 mt-1" x-text="selectedAthlete ? 'Verified by ' + selectedAthlete.combine.shuttleVerifiedBy : ''"></p>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center space-x-2">
-              <i data-lucide="bar-chart-3" class="w-5 h-5 text-indigo-600"></i>
-              <span>Position-Specific Evaluator Grades (<span x-text="selectedAthlete ? selectedAthlete.position : ''"></span>)</span>
-            </h2>
-
-            <div class="space-y-4" x-if="selectedAthlete">
-              <template x-for="category in selectedAthlete.categories" :key="category.name">
-                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                  <div class="flex justify-between items-center mb-2">
-                    <span class="font-bold text-sm text-slate-900" x-text="category.name"></span>
-                    <span class="font-black text-sm text-indigo-600" x-text="calcCategoryOverallAvg(category.ratings) + ' / 100'"></span>
-                  </div>
-                  <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-                    <div class="bg-indigo-600 h-2 rounded-full" :style="'width: ' + calcCategoryOverallAvg(category.ratings) + '%'"></div>
-                  </div>
-                </div>
-              </template>
-            </div>
-          </div>
-        </div>
-
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-          <h2 class="text-base font-bold text-slate-900 mb-4 flex items-center space-x-2">
-            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
-            <span>Verified Audit History</span>
-          </h2>
-
-          <div class="space-y-3" x-if="selectedAthlete">
-            <template x-for="log in selectedAthlete.auditLogs" :key="log.id">
-              <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs">
-                <div class="font-bold text-slate-900" x-text="log.action"></div>
-                <div class="text-slate-500 mt-0.5" x-text="'By ' + log.updatedBy"></div>
+          <h2 class="text-lg font-bold text-slate-900 mb-4">Progression History</h2>
+          <canvas id="athleteChart" class="w-full h-64"></canvas>
+        </div>
+        
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm max-h-[400px] overflow-y-auto">
+          <h2 class="text-lg font-bold text-slate-900 mb-4">Detailed Evaluation Log</h2>
+          <div class="space-y-4">
+            <template x-for="log in selectedAthlete.evaluations" :key="log.id">
+              <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="font-bold text-slate-900" x-text="log.date"></span>
+                  <span class="text-indigo-600 font-bold" x-text="log.evaluator"></span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-200">
+                  <template x-for="(value, key) in log.metrics" :key="key">
+                    <div class="flex flex-col">
+                      <span class="text-[10px] uppercase text-slate-400 font-bold" x-text="key.replace(/([A-Z])/g, ' $1').trim()"></span>
+                      <span class="text-sm font-black text-slate-800">
+                        <span x-text="value.score || value.value"></span>
+                        <template x-if="value.video">
+                          <a :href="value.video" target="_blank" class="text-blue-500 ml-1"><i data-lucide="video" class="w-3 h-3 inline"></i></a>
+                        </template>
+                      </span>
+                    </div>
+                  </template>
+                </div>
               </div>
             </template>
           </div>
@@ -453,315 +270,203 @@
     <div x-show="currentView === 'vp_directory'" x-cloak class="space-y-6">
       <div>
         <h1 class="text-2xl font-black text-slate-900">Verified Personnel Directory</h1>
-        <p class="text-xs text-slate-500">Connect with certified youth coaches, varsity evaluators, and private skill trainers contributing to NextGen Athletics.</p>
       </div>
-
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <template x-for="vp in verifiedPersonnelList" :key="vp.id">
-          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+        <template x-for="vp in vpDirectoryList" :key="vp.id">
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
             <div class="flex items-center space-x-4">
-              <div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-lg" x-text="vp.initials"></div>
+              <template x-if="vp.photo_url">
+                <img :src="vp.photo_url" class="w-12 h-12 rounded-xl object-cover">
+              </template>
+              <template x-if="!vp.photo_url">
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 font-bold flex items-center justify-center text-lg" x-text="vp.full_name[0]"></div>
+              </template>
               <div>
-                <h3 class="font-bold text-slate-900 text-base" x-text="vp.name"></h3>
-                <p class="text-xs text-slate-500" x-text="vp.title + ' • ' + vp.org"></p>
+                <h3 class="font-bold text-slate-900 text-base" x-text="vp.full_name"></h3>
+                <p class="text-xs text-slate-500" x-text="vp.title_or_org"></p>
               </div>
             </div>
-
-            <div class="bg-slate-50 border border-slate-100 p-3 rounded-xl text-xs space-y-1">
-              <div class="flex justify-between text-slate-600">
-                <span>Audited Submissions:</span>
-                <strong class="text-slate-900" x-text="vp.submissionCount"></strong>
-              </div>
-              <div class="flex justify-between text-slate-600">
-                <span>Primary Specialty:</span>
-                <strong class="text-indigo-600" x-text="vp.specialty"></strong>
-              </div>
-            </div>
-
-            <div class="pt-2 border-t border-slate-100">
-              <template x-if="!vp.isContactRestricted">
-                <div class="text-xs text-slate-600 space-y-1">
-                  <div><strong>Email:</strong> <span x-text="vp.publicEmail"></span></div>
-                  <div><strong>Phone:</strong> <span x-text="vp.publicPhone"></span></div>
-                </div>
-              </template>
-              <template x-if="vp.isContactRestricted">
-                <div class="text-xs text-slate-400 italic">
-                  Contact details restricted by personnel settings to prevent solicitation.
-                </div>
-              </template>
-            </div>
+            <p class="text-xs text-slate-600 mt-4 italic" x-text="vp.bio || 'Verified Member of NextGen Athletix.'"></p>
           </div>
         </template>
       </div>
     </div>
 
-    <!-- VIEW 5: VERIFIED PERSONNEL PORTAL (PROTECTED LOCK SCREEN) -->
+    <!-- VIEW 5: VP PORTAL -->
     <div x-show="currentView === 'vp_portal'" x-cloak class="max-w-4xl mx-auto space-y-8">
-      
-      <!-- Locked Access Banner -->
       <template x-if="!currentUser || (currentUser.role !== 'vp' && currentUser.role !== 'admin')">
-        <div class="bg-white border border-slate-200 rounded-3xl p-8 text-center space-y-4 shadow-md my-12">
-          <div class="w-16 h-16 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-2xl mx-auto flex items-center justify-center">
-            <i data-lucide="lock" class="w-8 h-8"></i>
-          </div>
-          <h2 class="text-2xl font-black text-slate-900">VP Portal Access Restricted</h2>
-          <p class="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
-            You must be an approved Verified Personnel (VP) or Administrator to enter the scouting workspace and submit player scores.
-          </p>
-          <button type="button" @click="showAuthModal = true" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition cursor-pointer">
-            Sign In / Register as VP
-          </button>
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 text-center shadow-md my-12">
+          <h2 class="text-2xl font-black text-slate-900">VP Portal Locked</h2>
+          <button type="button" @click="showAuthModal = true" class="mt-4 px-6 py-3 bg-indigo-600 text-white font-bold text-xs rounded-xl shadow-md">Sign In / Register</button>
         </div>
       </template>
 
-      <!-- Active VP Workspace (Shown only when logged in as VP/Admin) -->
       <template x-if="currentUser && (currentUser.role === 'vp' || currentUser.role === 'admin')">
         <div class="space-y-8">
           <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center space-x-4">
-              <div class="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-xl" x-text="currentUser.initials"></div>
-              <div>
-                <div class="flex items-center space-x-2">
-                  <h2 class="font-bold text-slate-900 text-lg" x-text="currentUser.name"></h2>
-                  <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">Active VP</span>
-                </div>
-                <p class="text-xs text-slate-500" x-text="currentUser.org"></p>
-              </div>
-            </div>
-
             <div class="flex items-center space-x-3">
-              <button type="button" @click="activeVpTab = 'add'" :class="activeVpTab === 'add' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl transition cursor-pointer">Add Athlete</button>
-              <button type="button" @click="activeVpTab = 'update'" :class="activeVpTab === 'update' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl transition cursor-pointer">Submit Grades</button>
-              <button type="button" @click="activeVpTab = 'settings'" :class="activeVpTab === 'settings' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl transition cursor-pointer">Privacy</button>
+              <button type="button" @click="activeVpTab = 'add'" :class="activeVpTab === 'add' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl">Add Athlete</button>
+              <button type="button" @click="activeVpTab = 'update'" :class="activeVpTab === 'update' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl">Submit Grades</button>
+              <button type="button" @click="activeVpTab = 'profile'" :class="activeVpTab === 'profile' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl">My Profile</button>
             </div>
           </div>
 
-          <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
-            <div x-show="activeVpTab === 'add'" class="space-y-4">
-              <h3 class="text-lg font-bold text-slate-900">Add New Prospect (Youth or Varsity)</h3>
-              <form @submit.prevent="createNewAthlete()" class="space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">First Name</label>
-                    <input type="text" x-model="newAthleteForm.firstName" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Last Name</label>
-                    <input type="text" x-model="newAthleteForm.lastName" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-4">
-                  <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Development Level</label>
-                    <select x-model="newAthleteForm.levelTag" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-                      <option value="Youth">Youth League (Ages 6-12)</option>
-                      <option value="Middle School">Middle School (7th-8th)</option>
-                      <option value="Varsity">High School Varsity (9th-12th)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Position</label>
-                    <select x-model="newAthleteForm.position" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-                      <template x-for="pos in allFootballPositions" :key="pos.code">
-                        <option :value="pos.code" x-text="pos.code + ' - ' + pos.name"></option>
-                      </template>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">State</label>
-                    <input type="text" x-model="newAthleteForm.state" placeholder="e.g. AZ" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">High School / Youth League</label>
-                    <input type="text" x-model="newAthleteForm.highSchool" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">40-Yard Dash (s)</label>
-                    <input type="text" x-model="newAthleteForm.fortyYard" placeholder="4.50" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-                  </div>
-                </div>
-
-                <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition shadow-md cursor-pointer">
-                  Publish Prospect Profile
-                </button>
-              </form>
-            </div>
-
-            <div x-show="activeVpTab === 'update'" class="space-y-4">
-              <h3 class="text-lg font-bold text-slate-900">Position-Specific Skill Grading</h3>
-              <form @submit.prevent="submitGradeUpdate()" class="space-y-4">
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+            <!-- Add Athlete Tab -->
+            <div x-show="activeVpTab === 'add'">
+              <h3 class="text-lg font-bold text-slate-900 mb-4">Create Prospect Profile</h3>
+              <form @submit.prevent="createNewAthlete()" class="grid grid-cols-2 gap-4">
+                <div><label class="text-xs font-bold text-slate-500 uppercase">First Name</label><input type="text" x-model="newAthleteForm.firstName" required class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
+                <div><label class="text-xs font-bold text-slate-500 uppercase">Last Name</label><input type="text" x-model="newAthleteForm.lastName" required class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
                 <div>
-                  <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Select Prospect</label>
-                  <select x-model="updateForm.athleteId" @change="onProspectSelectForGrading()" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-                    <template x-for="ath in athletes" :key="ath.id">
-                      <option :value="ath.id" x-text="ath.name + ' (' + ath.position + ')'"></option>
-                    </template>
+                  <label class="text-xs font-bold text-slate-500 uppercase">Position</label>
+                  <select x-model="newAthleteForm.position" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs">
+                    <option value="QB">Quarterback</option><option value="RB">Running Back</option><option value="WR">Wide Receiver</option>
+                    <option value="TE">Tight End</option><option value="OL">Offensive Line</option><option value="DL">Defensive Line</option>
+                    <option value="EDGE">Edge Rusher</option><option value="LB">Linebacker</option><option value="CB">Cornerback</option>
+                    <option value="S">Safety</option><option value="K">Kicker</option><option value="P">Punter</option><option value="LS">Long Snapper</option>
                   </select>
                 </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Position Skill Category</label>
-                    <select x-model="updateForm.category" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-                      <template x-for="catName in currentAvailableCategories" :key="catName">
-                        <option :value="catName" x-text="catName"></option>
-                      </template>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Score (0 - 100)</label>
-                    <input type="number" x-model="updateForm.score" placeholder="e.g. 92" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-                  </div>
-                </div>
-
-                <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow-md cursor-pointer">
-                  Publish Verified Rating
-                </button>
+                <div><label class="text-xs font-bold text-slate-500 uppercase">High School</label><input type="text" x-model="newAthleteForm.highSchool" required class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
+                <div class="col-span-2"><label class="text-xs font-bold text-slate-500 uppercase">Photo URL (Optional)</label><input type="url" x-model="newAthleteForm.photoUrl" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
+                <button type="submit" class="col-span-2 py-3 bg-indigo-600 text-white font-bold text-xs rounded-xl shadow-md">Create Profile</button>
               </form>
             </div>
 
-            <div x-show="activeVpTab === 'settings'" class="space-y-4">
-              <h3 class="text-lg font-bold text-slate-900">Personnel Privacy Settings</h3>
-              <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
-                <label class="flex items-center space-x-3 cursor-pointer">
-                  <input type="checkbox" x-model="currentVpSettings.restrictContact" class="rounded bg-white border-slate-300 text-indigo-600">
-                  <span class="text-xs font-bold text-slate-800">Restrict Public Contact Information</span>
-                </label>
+            <!-- Submit Grades Tab -->
+            <div x-show="activeVpTab === 'update'">
+              <h3 class="text-lg font-bold text-slate-900 mb-4">Submit Verified Metrics</h3>
+              <div class="mb-4">
+                <select x-model="evalForm.athleteId" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs font-bold">
+                  <option value="">-- Select Athlete --</option>
+                  <template x-for="ath in athletes" :key="ath.id"><option :value="ath.id" x-text="ath.name + ' (' + ath.position + ')'"></option></template>
+                </select>
               </div>
+
+              <div class="flex space-x-2 border-b border-slate-200 mb-4">
+                <button type="button" @click="evalMode = 'scouting'" :class="evalMode === 'scouting' ? 'border-indigo-600 text-indigo-600 border-b-2' : 'text-slate-400'" class="pb-2 text-xs font-bold uppercase flex-1">NFL Scouting Grades</button>
+                <button type="button" @click="evalMode = 'physical'" :class="evalMode === 'physical' ? 'border-indigo-600 text-indigo-600 border-b-2' : 'text-slate-400'" class="pb-2 text-xs font-bold uppercase flex-1">Physical Evaluations</button>
+              </div>
+
+              <div x-show="evalMode === 'scouting'">
+                <p class="text-xs text-slate-500 mb-4">Grade positional skills 0-100.</p>
+                <div class="grid grid-cols-2 gap-4">
+                  <template x-for="cat in currentPositionCategories()" :key="cat">
+                    <div class="flex items-center space-x-2">
+                      <label class="text-[10px] font-bold uppercase flex-1" x-text="cat"></label>
+                      <input type="number" min="0" max="100" x-model="evalForm.scouting[cat]" class="w-16 bg-slate-50 border rounded p-1 text-xs">
+                    </div>
+                  </template>
+                </div>
+              </div>
+
+              <div x-show="evalMode === 'physical'" class="space-y-6">
+                <div>
+                  <h4 class="text-sm font-bold text-slate-900 mb-2 border-b pb-1">Combine Tests (Add Result & Optional Video Link)</h4>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <template x-for="test in physicalTestsList" :key="test.key">
+                      <div class="bg-slate-50 p-3 rounded border">
+                        <label class="block text-[10px] font-bold uppercase mb-1" x-text="test.label"></label>
+                        <div class="flex space-x-2">
+                          <input type="text" :placeholder="test.placeholder" x-model="evalForm.physical[test.key].value" class="w-1/3 border rounded p-1.5 text-xs">
+                          <input type="url" placeholder="Video URL" x-model="evalForm.physical[test.key].video" class="w-2/3 border rounded p-1.5 text-xs">
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 class="text-sm font-bold text-slate-900 mb-2 border-b pb-1">Anthropometrics</h4>
+                  <div class="grid grid-cols-3 gap-3">
+                    <template x-for="anthro in anthroList" :key="anthro.key">
+                      <div>
+                        <label class="block text-[10px] font-bold uppercase mb-1" x-text="anthro.label"></label>
+                        <input type="text" :placeholder="anthro.placeholder" x-model="evalForm.anthro[anthro.key]" class="w-full border rounded p-1.5 text-xs bg-slate-50">
+                      </div>
+                    </template>
+                  </div>
+                </div>
+              </div>
+
+              <button type="button" @click="submitEvaluation()" class="w-full py-3 mt-6 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-md">Publish Verified Report</button>
+            </div>
+
+            <!-- VP Profile Tab -->
+            <div x-show="activeVpTab === 'profile'">
+              <h3 class="text-lg font-bold text-slate-900 mb-4">Edit Personnel Profile</h3>
+              <form @submit.prevent="updateVpProfile()" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                  <div><label class="text-xs font-bold text-slate-500 uppercase">Full Name</label><input type="text" x-model="vpProfileForm.name" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
+                  <div><label class="text-xs font-bold text-slate-500 uppercase">Organization / Position</label><input type="text" x-model="vpProfileForm.org" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
+                  <div><label class="text-xs font-bold text-slate-500 uppercase">Contact Phone</label><input type="text" x-model="vpProfileForm.phone" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
+                  <div><label class="text-xs font-bold text-slate-500 uppercase">Photo URL</label><input type="url" x-model="vpProfileForm.photoUrl" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
+                </div>
+                <div><label class="text-xs font-bold text-slate-500 uppercase">Bio / Credentials</label><textarea x-model="vpProfileForm.bio" rows="3" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></textarea></div>
+                <button type="submit" class="w-full py-3 bg-indigo-600 text-white font-bold text-xs rounded-xl shadow-md">Save Profile Settings</button>
+              </form>
             </div>
           </div>
         </div>
       </template>
-
     </div>
 
-    <!-- VIEW 6: BECOME A SPONSOR PAGE -->
-    <div x-show="currentView === 'sponsor'" x-cloak class="max-w-4xl mx-auto space-y-10">
-      <div class="bg-slate-900 text-white rounded-3xl p-8 sm:p-12 shadow-xl">
-        <span class="px-3 py-1 bg-amber-500/20 border border-amber-400/30 text-amber-300 text-xs font-extrabold rounded-full uppercase tracking-wider inline-block mb-3">Sought-After Partner Network</span>
-        <h1 class="text-3xl sm:text-5xl font-black tracking-tight">Sponsor NextGen Athletics</h1>
-        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mt-3 max-w-2xl">
-          Gain exclusive brand exposure across our youth sports developmental pipelines, high school combine showcases, and college recruitment databases.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm space-y-3">
-          <span class="text-xs font-bold text-indigo-600 uppercase">Tier 1</span>
-          <h3 class="font-black text-slate-900 text-lg">Local Academy Partner</h3>
-          <p class="text-xs text-slate-500 leading-relaxed">Ideal for local training facilities, speed coaches, and equipment suppliers targeting regional youth athletes.</p>
-        </div>
-
-        <div class="bg-white border border-indigo-300 ring-2 ring-indigo-500/20 p-6 rounded-2xl shadow-sm space-y-3 relative">
-          <span class="text-xs font-bold text-amber-600 uppercase">Tier 2 • Most Popular</span>
-          <h3 class="font-black text-slate-900 text-lg">State Showcase Sponsor</h3>
-          <p class="text-xs text-slate-500 leading-relaxed">Prominent placement across state athlete search queries and high school combine leaderboards.</p>
-        </div>
-
-        <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm space-y-3">
-          <span class="text-xs font-bold text-emerald-600 uppercase">Tier 3</span>
-          <h3 class="font-black text-slate-900 text-lg">National Title Partner</h3>
-          <p class="text-xs text-slate-500 leading-relaxed">Exclusive brand integration on national leaderboards, news feeds, and scout report headers.</p>
-        </div>
-      </div>
-
-      <div class="bg-white border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-sm">
-        <h3 class="text-xl font-bold text-slate-900 mb-1">Submit Sponsorship Inquiry</h3>
-        <form @submit.prevent="submitSponsorForm()" class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Organization Name</label>
-              <input type="text" x-model="sponsorForm.orgName" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Contact Name</label>
-              <input type="text" x-model="sponsorForm.contactName" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-            </div>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Phone or Email</label>
-            <input type="text" x-model="sponsorForm.contactInfo" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-          </div>
-          <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition shadow-md cursor-pointer">
-            Submit Inquiry to Founder
-          </button>
-        </form>
-      </div>
-    </div>
-
-    <!-- VIEW 7: ADMIN PORTAL (STRICTLY LOCKED) -->
-    <div x-show="currentView === 'admin'" x-cloak class="max-w-4xl mx-auto space-y-8">
-      
-      <!-- Admin Lock Screen -->
-      <template x-if="!currentUser || currentUser.role !== 'admin'">
-        <div class="bg-white border border-slate-200 rounded-3xl p-8 text-center space-y-4 shadow-md my-12">
-          <div class="w-16 h-16 bg-rose-50 border border-rose-100 text-rose-600 rounded-2xl mx-auto flex items-center justify-center">
-            <i data-lucide="shield-alert" class="w-8 h-8"></i>
-          </div>
-          <h2 class="text-2xl font-black text-slate-900">Administrator Access Only</h2>
-          <p class="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
-            This dashboard is restricted exclusively to NextGen Athletics system administrators.
-          </p>
-          <button type="button" @click="showAuthModal = true" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition cursor-pointer">
-            Sign In as Admin
-          </button>
-        </div>
-      </template>
-
-      <!-- Active Admin Portal View -->
+    <!-- VIEW 6: ADMIN PORTAL -->
+    <div x-show="currentView === 'admin'" x-cloak class="max-w-5xl mx-auto space-y-8">
       <template x-if="currentUser && currentUser.role === 'admin'">
         <div class="space-y-8">
-          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-            <h2 class="text-xl font-bold text-slate-900 mb-1">Pending VP Applications</h2>
-            <p class="text-xs text-slate-500 mb-6">Review personnel requests. Only approved coaches can publish scores.</p>
-
+          
+          <!-- Pending Requests -->
+          <div class="bg-white border border-rose-200 rounded-3xl p-6 shadow-sm">
+            <h2 class="text-xl font-bold text-slate-900 mb-4">Pending VP Applications</h2>
             <div class="space-y-3">
               <template x-for="applicant in pendingApplicants" :key="applicant.id">
-                <div class="flex items-center justify-between bg-slate-50 border border-slate-200 p-4 rounded-2xl">
+                <div class="flex items-center justify-between bg-slate-50 border p-4 rounded-2xl">
                   <div>
-                    <div class="flex items-center space-x-2">
-                      <span class="font-bold text-sm text-slate-900" x-text="applicant.name"></span>
-                      <span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold" x-text="applicant.role"></span>
-                    </div>
-                    <p class="text-xs text-slate-500 mt-0.5" x-text="applicant.org + ' • ' + applicant.email"></p>
+                    <span class="font-bold text-sm text-slate-900" x-text="applicant.name"></span>
+                    <p class="text-xs text-slate-500" x-text="applicant.org + ' • ' + applicant.email + ' • ' + (applicant.phone || 'No Phone')"></p>
                   </div>
-
-                  <div class="flex items-center space-x-2">
-                    <button type="button" @click="approvePersonnel(applicant.id)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition cursor-pointer">Approve VP</button>
-                    <button type="button" @click="rejectPersonnel(applicant.id)" class="px-3 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold text-xs rounded-lg transition cursor-pointer">Reject</button>
+                  <div class="flex space-x-2">
+                    <button @click="approvePersonnel(applicant.id)" class="px-3 py-1.5 bg-emerald-600 text-white font-bold text-xs rounded-lg">Approve</button>
+                    <button @click="rejectPersonnel(applicant.id)" class="px-3 py-1.5 bg-rose-50 text-rose-600 font-bold text-xs rounded-lg">Reject</button>
                   </div>
                 </div>
               </template>
+              <template x-if="pendingApplicants.length === 0"><p class="text-xs text-slate-400 italic">No pending applications.</p></template>
+            </div>
+          </div>
 
-              <template x-if="pendingApplicants.length === 0">
-                <div class="text-center py-8 text-slate-400 text-xs italic">
-                  No pending VP applications at this time.
-                </div>
-              </template>
+          <!-- Active Directory Management -->
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+            <h2 class="text-xl font-bold text-slate-900 mb-4">Current Verified Personnel</h2>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-50 border-b">
+                  <tr><th class="p-3 font-bold uppercase text-slate-400">Name / Org</th><th class="p-3 font-bold uppercase text-slate-400">Contact</th><th class="p-3 font-bold uppercase text-slate-400">Date Joined</th></tr>
+                </thead>
+                <tbody>
+                  <template x-for="vp in vpDirectoryList" :key="vp.id">
+                    <tr class="border-b last:border-0 hover:bg-slate-50">
+                      <td class="p-3"><strong class="text-slate-900 block" x-text="vp.full_name"></strong><span x-text="vp.title_or_org"></span></td>
+                      <td class="p-3"><span class="block" x-text="vp.email"></span><span x-text="vp.phone || 'N/A'"></span></td>
+                      <td class="p-3" x-text="new Date(vp.created_at).toLocaleDateString()"></td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </template>
-
     </div>
 
   </main>
 
   <!-- FOOTER -->
   <footer class="border-t border-slate-200 bg-white py-6 mt-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-      <div class="flex items-center space-x-2">
-        <span class="font-black text-slate-900">NEXTGEN ATHLETICS</span>
-        <span>• Youth to College Verified Data Protocol</span>
-      </div>
-      <div>
-        <span>&copy; 2026 NextGen Athletics Network. All Rights Reserved.</span>
-      </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between text-xs text-slate-500">
+      <div class="font-black text-slate-900">NEXTGEN ATHLETIX</div>
+      <div>&copy; 2026 NextGen Athletix Network.</div>
     </div>
   </footer>
 
@@ -774,62 +479,68 @@
         showAuthModal: false,
         authTab: 'signin',
         currentUser: null,
+        chartInstance: null,
 
-        authForm: { email: '', password: '', fullName: '', orgName: '' },
-        searchQuery: '',
-        filterState: 'ALL',
-        filterPosition: 'ALL',
-        filterLevel: 'ALL',
-        filterMinGrade: '0',
+        authForm: { email: '', password: '', fullName: '', orgName: '', phone: '' },
+        vpProfileForm: { name: '', org: '', phone: '', bio: '', photoUrl: '' },
+        
+        evalMode: 'scouting',
+        newAthleteForm: { firstName: '', lastName: '', position: 'WR', highSchool: '', photoUrl: '' },
+        evalForm: { athleteId: '', scouting: {}, physical: {}, anthro: {} },
 
-        sponsorForm: { orgName: '', contactName: '', contactInfo: '', notes: '' },
-        newAthleteForm: { firstName: '', lastName: '', position: 'WR', state: '', classYear: '2027', highSchool: '', fortyYard: '', levelTag: 'Varsity' },
-        updateForm: { athleteId: 'ATH-1', category: '', score: '', notes: '' },
-        currentVpSettings: { restrictContact: false },
-
-        allFootballPositions: [
-          { code: 'QB', name: 'Quarterback', categories: ['Passing Accuracy & Velocity', 'Pocket Awareness & Vision', 'Arm Mechanics'] },
-          { code: 'RB', name: 'Running Back', categories: ['Vision & Hole Selection', 'Elusiveness & Break-Tackle', 'Pass Protection'] },
-          { code: 'WR', name: 'Wide Receiver', categories: ['Route Running Precision', 'Catch Radius & Hands', 'Release vs Press'] }
+        physicalTestsList: [
+          { key: 'forty', label: '40-Yard Dash (s)', placeholder: '4.45' },
+          { key: 'bench', label: 'Bench Press (185lbs reps)', placeholder: '15' },
+          { key: 'vertical', label: 'Vertical Jump (in)', placeholder: '36.5' },
+          { key: 'broad', label: 'Broad Jump (ft-in)', placeholder: '10-2' },
+          { key: 'threeCone', label: '3-Cone Drill (s)', placeholder: '6.9' },
+          { key: 'shuttle', label: '20-Yd Shuttle (s)', placeholder: '4.1' }
+        ],
+        anthroList: [
+          { key: 'height', label: 'Height', placeholder: `6'1"` },
+          { key: 'weight', label: 'Weight (lbs)', placeholder: '190' },
+          { key: 'arm', label: 'Arm Length (in)', placeholder: '32.5' },
+          { key: 'wingspan', label: 'Wingspan (in)', placeholder: '76' },
+          { key: 'hand', label: 'Hand Size (in)', placeholder: '9.5' }
         ],
 
-        verifiedPersonnelList: [
-          { id: 'VP-1', initials: 'MV', name: 'Coach Marcus Vance', title: 'Speed Specialist', org: 'Apex Speed Academy', specialty: 'WR / DB Speed', submissionCount: 42, publicEmail: 'mvance@apexspeed.com', publicPhone: '(602) 555-0192', isContactRestricted: false }
-        ],
+        positionCategories: {
+          'QB': ['Arm Strength', 'Accuracy', 'Processing', 'Pocket Presence', 'Mechanics'],
+          'RB': ['Vision', 'Contact Balance', 'Burst', 'Pass Catching', 'Pass Protection'],
+          'WR': ['Route Running', 'Hands', 'Release', 'YAC', 'Body Control'],
+          'TE': ['Run Blocking', 'Pass Catching', 'Route Running', 'Seam Threat', 'Release'],
+          'OL': ['Pass Sets', 'Run Blocking', 'Anchor', 'Mobility', 'Hand Placement'],
+          'DL': ['Get-off', 'Pass Rush Moves', 'Run Defense', 'Pad Level', 'Motor'],
+          'EDGE': ['Get-off', 'Bend', 'Pass Rush Moves', 'Run Defense', 'Motor'],
+          'LB': ['Tackling', 'Block Shedding', 'Coverage', 'Instincts', 'Pursuit'],
+          'CB': ['Man Coverage', 'Zone Coverage', 'Ball Skills', 'Tackling', 'Hips/Transitions'],
+          'S': ['Range', 'Zone Coverage', 'Ball Skills', 'Tackling', 'Run Support'],
+          'K': ['Leg Strength', 'Accuracy', 'Operation Time', 'Kickoffs'],
+          'P': ['Hangtime', 'Distance', 'Directional Punting', 'Operation Time'],
+          'LS': ['Snap Velocity', 'Accuracy', 'Blocking', 'Coverage']
+        },
 
+        vpDirectoryList: [],
         pendingApplicants: [],
 
+        // Mock Database for Athletes until connected to Postgres
         athletes: [
-          {
-            id: 'ATH-1',
-            name: 'DeAndre Carter',
-            initials: 'DC',
-            highSchool: 'Saguaro High School',
-            city: 'Scottsdale',
-            state: 'AZ',
-            position: 'WR',
-            levelTag: 'Varsity',
-            classYear: '2027',
-            height: `6'1"`,
-            weight: 188,
-            combine: { '40Yard': '4.42', '40YardVerifiedBy': 'Coach Marcus Vance', shuttle: '4.12', shuttleVerifiedBy: 'Trainer Ray Miller', vertical: '37.5' },
-            categories: [{ name: 'Route Running Precision', ratings: [{ id: 1, evaluatorName: 'Coach Marcus Vance', score: 94 }] }],
-            auditLogs: [{ id: 1, action: 'Route Running Grade Updated to 94', updatedBy: 'Coach Marcus Vance' }]
-          }
+          { id: 'ATH-1', name: 'DeAndre Carter', initials: 'DC', highSchool: 'Saguaro HS', state: 'AZ', position: 'WR', photoUrl: '', evaluations: [
+            { id: 1, date: '2026-09-01', evaluator: 'Coach Vance', metrics: { 'Route Running': { score: 94 }, 'forty': { value: '4.42', video: '' } } },
+            { id: 2, date: '2026-10-15', evaluator: 'Coach Vance', metrics: { 'Route Running': { score: 96 } } }
+          ]}
         ],
-
         selectedAthlete: null,
 
         init() {
           const SUPABASE_URL = 'https://dixvkrnelykxsbrbjlld.supabase.co';
           const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpeHZrcm5lbHlreHNicmJqbGxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIyOTQwMzgsImV4cCI6MjEwNzg3MDAzOH0.T-1Tsv5VuumkXLnAuro0COWcegHvjUcEd9Dd3tZAbYo';
-          
           if (window.supabase) {
             window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             this.checkSession();
+            this.loadVerifiedPersonnel();
           }
-
-          this.selectedAthlete = this.athletes[0];
+          this.resetEvalForm();
           setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 100);
         },
 
@@ -840,188 +551,143 @@
             const { data: profile } = await window.db.from('users').select('*').eq('id', session.user.id).single();
             if (profile) {
               this.currentUser = {
-                id: profile.id,
-                name: profile.full_name,
-                initials: profile.full_name ? profile.full_name.split(' ').map(n=>n[0]).join('') : 'U',
-                role: profile.role,
-                org: profile.title_or_org
+                id: profile.id, name: profile.full_name || 'New User', initials: profile.full_name ? profile.full_name[0] : 'U',
+                role: profile.role, org: profile.title_or_org, phone: profile.phone, bio: profile.bio, photoUrl: profile.photo_url
               };
-              if (profile.role === 'admin') {
-                this.loadPendingApplicants();
-              }
+              this.vpProfileForm = { name: profile.full_name, org: profile.title_or_org, phone: profile.phone, bio: profile.bio, photoUrl: profile.photo_url };
+              if (profile.role === 'admin') this.loadAdminData();
             }
           }
         },
 
-        async loadPendingApplicants() {
+        async loadVerifiedPersonnel() {
           if (!window.db) return;
-          const { data, error } = await window.db.from('users').select('*').eq('is_approved', false);
-          if (!error && data) {
-            this.pendingApplicants = data.map(u => ({
-              id: u.id,
-              name: u.full_name,
-              role: u.role.toUpperCase(),
-              org: u.title_or_org || 'Independent',
-              email: u.email
-            }));
-          }
+          const { data } = await window.db.from('users').select('*').eq('is_approved', true).eq('role', 'vp').order('created_at', { ascending: false });
+          if (data) this.vpDirectoryList = data;
         },
 
-        async handleSignIn() {
+        async loadAdminData() {
           if (!window.db) return;
-          const { data, error } = await window.db.auth.signInWithPassword({
-            email: this.authForm.email,
-            password: this.authForm.password
-          });
-
-          if (error) {
-            alert('Sign in failed: ' + error.message);
-          } else {
-            await this.checkSession();
-            this.showAuthModal = false;
-            alert('Signed in successfully!');
-          }
+          const { data } = await window.db.from('users').select('*').eq('is_approved', false);
+          if (data) this.pendingApplicants = data.map(u => ({ id: u.id, name: u.full_name, org: u.title_or_org, email: u.email, phone: u.phone }));
+          this.loadVerifiedPersonnel();
         },
 
         async handleRegistration() {
           if (!window.db) return;
-          const { data, error } = await window.db.auth.signUp({
-            email: this.authForm.email,
-            password: this.authForm.password,
-            options: {
-              data: {
-                full_name: this.authForm.fullName,
-                title_or_org: this.authForm.orgName
-              }
-            }
-          });
-
-          if (error) {
-            alert('Registration error: ' + error.message);
-          } else {
-            alert('Registration submitted successfully! You will be able to publish metrics once an administrator approves your account.');
+          const { data: authData, error: authError } = await window.db.auth.signUp({ email: this.authForm.email, password: this.authForm.password });
+          if (authError) { alert(authError.message); return; }
+          if (authData.user) {
+            await window.db.from('users').insert({
+              id: authData.user.id, full_name: this.authForm.fullName, email: this.authForm.email,
+              role: 'vp', is_approved: false, title_or_org: this.authForm.orgName, phone: this.authForm.phone
+            });
+            alert('Registration sent to admin for approval!');
             this.showAuthModal = false;
-            this.authForm = { email: '', password: '', fullName: '', orgName: '' };
           }
+        },
+
+        async handleSignIn() {
+          const { error } = await window.db.auth.signInWithPassword({ email: this.authForm.email, password: this.authForm.password });
+          if (error) alert(error.message); else { await this.checkSession(); this.showAuthModal = false; }
         },
 
         async handleSignOut() {
-          if (window.db) await window.db.auth.signOut();
-          this.currentUser = null;
-          this.setView('home');
-          alert('Signed out successfully.');
+          await window.db.auth.signOut();
+          this.currentUser = null; this.setView('home');
         },
+
+        async updateVpProfile() {
+          if(!window.db) return;
+          await window.db.from('users').update({
+            full_name: this.vpProfileForm.name, title_or_org: this.vpProfileForm.org,
+            phone: this.vpProfileForm.phone, bio: this.vpProfileForm.bio, photo_url: this.vpProfileForm.photoUrl
+          }).eq('id', this.currentUser.id);
+          alert('Profile Updated');
+          this.checkSession();
+        },
+
+        async approvePersonnel(id) { await window.db.from('users').update({ is_approved: true }).eq('id', id); this.loadAdminData(); },
+        async rejectPersonnel(id) { await window.db.from('users').delete().eq('id', id); this.loadAdminData(); },
 
         setView(view) {
           this.currentView = view;
-          if (view === 'admin' && this.currentUser && this.currentUser.role === 'admin') {
-            this.loadPendingApplicants();
-          }
+          if(view === 'admin' && this.currentUser?.role === 'admin') this.loadAdminData();
+          if(view === 'vp_directory') this.loadVerifiedPersonnel();
           setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 50);
-        },
-
-        get currentAvailableCategories() {
-          const selectedAth = this.athletes.find(a => a.id === this.updateForm.athleteId);
-          const posCode = selectedAth ? selectedAth.position : 'WR';
-          const match = this.allFootballPositions.find(p => p.code === posCode);
-          return match ? match.categories : ['General Athleticism'];
-        },
-
-        get filteredAthletes() {
-          return this.athletes.filter(a => {
-            if (this.searchQuery && !a.name.toLowerCase().includes(this.searchQuery.toLowerCase())) return false;
-            if (this.filterState !== 'ALL' && a.state !== this.filterState) return false;
-            if (this.filterPosition !== 'ALL' && a.position !== this.filterPosition) return false;
-            if (this.filterLevel !== 'ALL' && a.levelTag !== this.filterLevel) return false;
-            return true;
-          });
         },
 
         selectAthlete(athlete) {
           this.selectedAthlete = athlete;
           this.setView('profile');
-        },
-
-        calcCategoryOverallAvg(ratings) {
-          if (!ratings || ratings.length === 0) return 0;
-          const sum = ratings.reduce((acc, r) => acc + r.score, 0);
-          return Math.round(sum / ratings.length);
-        },
-
-        getAthleteOverallAvg(athlete) {
-          if (!athlete || !athlete.categories || athlete.categories.length === 0) return 0;
-          const sum = athlete.categories.reduce((acc, cat) => acc + this.calcCategoryOverallAvg(cat.ratings), 0);
-          return Math.round(sum / athlete.categories.length);
-        },
-
-        getEvaluatorCount(athlete) {
-          if (!athlete || !athlete.categories) return 0;
-          return athlete.categories.reduce((acc, cat) => acc + cat.ratings.length, 0);
-        },
-
-        async approvePersonnel(id) {
-          if (!window.db) return;
-          const { error } = await window.db.from('users').update({ is_approved: true }).eq('id', id);
-          if (error) {
-            alert('Error approving user: ' + error.message);
-          } else {
-            alert('VP Approved Successfully!');
-            this.loadPendingApplicants();
-          }
-        },
-
-        async rejectPersonnel(id) {
-          if (!window.db) return;
-          const { error } = await window.db.from('users').delete().eq('id', id);
-          if (error) {
-            alert('Error rejecting user: ' + error.message);
-          } else {
-            alert('Applicant rejected and removed.');
-            this.loadPendingApplicants();
-          }
-        },
-
-        submitSponsorForm() {
-          alert(`Thank you, ${this.sponsorForm.contactName}! Inquiry submitted.`);
-          this.sponsorForm = { orgName: '', contactName: '', contactInfo: '', notes: '' };
+          setTimeout(() => this.renderChart(), 200);
         },
 
         createNewAthlete() {
           const newAth = {
             id: 'ATH-' + Date.now(),
             name: `${this.newAthleteForm.firstName} ${this.newAthleteForm.lastName}`,
-            initials: `${this.newAthleteForm.firstName[0]}${this.newAthleteForm.lastName[0]}`,
-            highSchool: this.newAthleteForm.highSchool,
-            city: 'Phoenix',
-            state: this.newAthleteForm.state,
+            initials: this.newAthleteForm.firstName[0] + this.newAthleteForm.lastName[0],
             position: this.newAthleteForm.position,
-            levelTag: this.newAthleteForm.levelTag,
-            classYear: this.newAthleteForm.classYear,
-            height: `5'10"`,
-            weight: 165,
-            combine: { '40Yard': this.newAthleteForm.fortyYard || '4.60', '40YardVerifiedBy': this.currentUser ? this.currentUser.name : 'VP', shuttle: '4.30', shuttleVerifiedBy: 'VP', vertical: '32.0' },
-            categories: [{ name: 'General Performance', ratings: [{ id: 1, evaluatorName: this.currentUser ? this.currentUser.name : 'VP', score: 88 }] }],
-            auditLogs: [{ id: 1, action: `Profile Created (${this.newAthleteForm.levelTag})`, updatedBy: this.currentUser ? this.currentUser.name : 'VP' }]
+            highSchool: this.newAthleteForm.highSchool,
+            photoUrl: this.newAthleteForm.photoUrl,
+            evaluations: []
           };
-
           this.athletes.unshift(newAth);
-          this.selectAthlete(newAth);
+          alert('Profile Created!');
+          this.newAthleteForm = { firstName: '', lastName: '', position: 'WR', highSchool: '', photoUrl: '' };
         },
 
-        submitGradeUpdate() {
-          const ath = this.athletes.find(a => a.id === this.updateForm.athleteId);
-          if (ath && this.updateForm.score) {
-            let cat = ath.categories.find(c => c.name === this.updateForm.category);
-            if (!cat) {
-              cat = { name: this.updateForm.category, ratings: [] };
-              ath.categories.push(cat);
-            }
-            cat.ratings.unshift({ id: Date.now(), evaluatorName: this.currentUser ? this.currentUser.name : 'VP', score: parseInt(this.updateForm.score) });
-            ath.auditLogs.unshift({ id: Date.now(), action: `${this.updateForm.category} updated to ${this.updateForm.score}`, updatedBy: this.currentUser ? this.currentUser.name : 'VP' });
+        currentPositionCategories() {
+          if (!this.evalForm.athleteId) return [];
+          const ath = this.athletes.find(a => a.id === this.evalForm.athleteId);
+          return ath ? (this.positionCategories[ath.position] || []) : [];
+        },
 
-            alert(`Published rating update for ${ath.name}!`);
-            this.selectAthlete(ath);
+        resetEvalForm() {
+          this.physicalTestsList.forEach(t => this.evalForm.physical[t.key] = { value: '', video: '' });
+          this.anthroList.forEach(a => this.evalForm.anthro[a.key] = '');
+          this.evalForm.scouting = {};
+        },
+
+        submitEvaluation() {
+          if (!this.evalForm.athleteId) return alert('Select an athlete');
+          const ath = this.athletes.find(a => a.id === this.evalForm.athleteId);
+          
+          let logMetrics = {};
+          if (this.evalMode === 'scouting') {
+            for (const [k, v] of Object.entries(this.evalForm.scouting)) { if(v) logMetrics[k] = { score: v }; }
+          } else {
+            for (const [k, v] of Object.entries(this.evalForm.physical)) { if(v.value) logMetrics[k] = { value: v.value, video: v.video }; }
+            for (const [k, v] of Object.entries(this.evalForm.anthro)) { if(v) logMetrics[k] = { value: v }; }
           }
+
+          if (Object.keys(logMetrics).length === 0) return alert('Enter at least one metric to publish.');
+
+          ath.evaluations.unshift({ id: Date.now(), date: new Date().toISOString().split('T')[0], evaluator: this.currentUser.name, metrics: logMetrics });
+          alert('Verified Metrics Published!');
+          this.resetEvalForm();
+        },
+
+        renderChart() {
+          if (!this.selectedAthlete || !document.getElementById('athleteChart')) return;
+          if (this.chartInstance) this.chartInstance.destroy();
+          
+          // Filter logs that have scouting scores (ignoring physical-only updates for the graph)
+          let timeline = [...this.selectedAthlete.evaluations].reverse().filter(log => Object.values(log.metrics).some(m => m.score));
+          
+          let labels = timeline.map(log => log.date);
+          let dataPoints = timeline.map(log => {
+            let scores = Object.values(log.metrics).filter(m => m.score).map(m => parseInt(m.score));
+            return scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : null;
+          });
+
+          const ctx = document.getElementById('athleteChart').getContext('2d');
+          this.chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: { labels: labels, datasets: [{ label: 'Avg Scouting Grade', data: dataPoints, borderColor: '#4f46e5', backgroundColor: '#4f46e520', tension: 0.3, fill: true, pointRadius: 5 }] },
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 100 } } }
+          });
         }
       }));
     });
