@@ -46,37 +46,41 @@
       </div>
 
       <!-- Main Navigation -->
-      <nav class="flex items-center space-x-1 sm:space-x-2">
-        <button type="button" @click="setView('home')" :class="currentView === 'home' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5">
+      <nav class="flex items-center space-x-1 xl:space-x-2 overflow-x-auto hide-scrollbar">
+        <button type="button" @click="setView('home')" :class="currentView === 'home' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 shrink-0">
           <i data-lucide="home" class="w-4 h-4"></i><span class="hidden xl:inline">Home</span>
         </button>
 
-        <button type="button" @click="setView('about')" :class="currentView === 'about' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5">
-          <i data-lucide="info" class="w-4 h-4"></i><span class="hidden xl:inline">About</span>
-        </button>
-
-        <button type="button" @click="setView('search')" :class="currentView === 'search' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5">
+        <button type="button" @click="setView('search')" :class="currentView === 'search' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 shrink-0">
           <i data-lucide="database" class="w-4 h-4"></i><span class="hidden sm:inline">Athlete Database</span>
         </button>
 
-        <button type="button" @click="setView('vp_directory')" :class="currentView === 'vp_directory' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5">
-          <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i><span class="hidden sm:inline">Verified Personnel Directory</span>
+        <button type="button" @click="setView('vp_directory')" :class="currentView === 'vp_directory' || currentView === 'vp_profile_view' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 shrink-0">
+          <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i><span class="hidden sm:inline">Personnel Directory</span>
         </button>
         
-        <button type="button" @click="setView('stats')" :class="currentView === 'stats' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5">
+        <button type="button" @click="setView('stats')" :class="currentView === 'stats' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 shrink-0">
           <i data-lucide="bar-chart" class="w-4 h-4 text-amber-500"></i><span class="hidden sm:inline">External Stats</span>
         </button>
 
-        <button type="button" @click="setView('vp_portal')" :class="currentView === 'vp_portal' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5">
+        <button type="button" @click="setView('sponsor')" :class="currentView === 'sponsor' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 shrink-0">
+          <i data-lucide="award" class="w-4 h-4 text-amber-500"></i><span class="hidden sm:inline">Sponsor</span>
+        </button>
+
+        <button type="button" @click="setView('vp_portal')" :class="currentView === 'vp_portal' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 shrink-0">
           <i data-lucide="user-check" class="w-4 h-4 text-indigo-600"></i><span class="hidden xl:inline">VP Portal</span>
         </button>
 
         <!-- Admin Tab -->
         <template x-if="currentUser && currentUser.role === 'admin'">
-          <button type="button" @click="setView('admin')" :class="currentView === 'admin' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5">
+          <button type="button" @click="setView('admin')" :class="currentView === 'admin' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 shrink-0">
             <i data-lucide="shield" class="w-4 h-4 text-rose-600"></i><span class="hidden xl:inline">Admin</span>
           </button>
         </template>
+
+        <button type="button" @click="setView('about')" :class="currentView === 'about' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5 shrink-0">
+          <i data-lucide="info" class="w-4 h-4"></i><span class="hidden xl:inline">About</span>
+        </button>
       </nav>
 
       <!-- USER AUTH HEADER STATUS -->
@@ -91,8 +95,8 @@
           </div>
         </template>
         <template x-if="!currentUser">
-          <button type="button" @click="showAuthModal = true" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center space-x-1.5">
-            <i data-lucide="lock" class="w-3.5 h-3.5"></i><span>Sign In / Register</span>
+          <button type="button" @click="showAuthModal = true" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center space-x-1.5 shrink-0">
+            <i data-lucide="lock" class="w-3.5 h-3.5"></i><span class="hidden md:inline">Sign In / Register</span>
           </button>
         </template>
       </div>
@@ -148,22 +152,28 @@
         </div>
       </section>
 
-      <!-- Featured Athletes -->
+      <!-- Featured Athletes (Top 3 by Score) -->
       <section>
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-xl font-extrabold text-slate-900 flex items-center space-x-2"><i data-lucide="award" class="w-5 h-5 text-indigo-600"></i><span>Featured Verified Prospects</span></h2>
           <button @click="setView('search')" class="text-xs font-bold text-indigo-600 hover:underline">Full Database &rarr;</button>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <template x-for="athlete in filteredAthletes.slice(0,3)" :key="athlete.id">
+          <template x-for="athlete in topAthletes" :key="athlete.id">
             <div class="bg-white border border-slate-200 hover:border-indigo-300 rounded-2xl p-5 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col justify-between" @click="selectAthlete(athlete)">
               <div class="flex items-start justify-between">
                 <div class="flex items-center space-x-3">
                   <template x-if="athlete.photoUrl"><img :src="athlete.photoUrl" class="w-12 h-12 rounded-xl object-cover border border-slate-200"></template>
                   <template x-if="!athlete.photoUrl"><div class="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center font-black text-indigo-600" x-text="athlete.initials"></div></template>
-                  <div><h3 class="font-bold text-slate-900 text-base" x-text="athlete.name"></h3><p class="text-xs text-slate-500" x-text="athlete.highSchool"></p></div>
+                  <div>
+                    <h3 class="font-bold text-slate-900 text-base" x-text="athlete.name"></h3>
+                    <p class="text-xs text-slate-500" x-text="athlete.highSchool"></p>
+                  </div>
                 </div>
-                <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 font-bold text-xs rounded-lg" x-text="athlete.position"></span>
+                <div class="text-right">
+                  <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 font-bold text-xs rounded-lg block mb-1" x-text="athlete.position"></span>
+                  <span class="text-[10px] font-black text-slate-400">Score: <span class="text-indigo-600 text-xs" x-text="getOverallScore(athlete)"></span></span>
+                </div>
               </div>
               <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-medium">
                 <span class="text-indigo-600 font-bold">View Profile Analytics &rarr;</span>
@@ -175,6 +185,7 @@
 
       <!-- News Section -->
       <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- High School -->
         <div>
           <h2 class="text-lg font-black text-slate-900 mb-4 border-b border-slate-200 pb-2">High School Sports News (USA)</h2>
           <div class="space-y-4">
@@ -188,6 +199,7 @@
             </div>
           </div>
         </div>
+        <!-- College -->
         <div>
           <h2 class="text-lg font-black text-slate-900 mb-4 border-b border-slate-200 pb-2">College Sports News (USA)</h2>
           <div class="space-y-4">
@@ -204,28 +216,7 @@
       </section>
     </div>
 
-    <!-- VIEW: ABOUT US -->
-    <div x-show="currentView === 'about'" x-cloak class="max-w-4xl mx-auto space-y-8">
-      <div class="bg-white border border-slate-200 rounded-3xl p-8 sm:p-12 shadow-md text-center">
-        <h1 class="text-3xl sm:text-4xl font-black text-slate-900 mb-6">Pioneering the Future of Scouting</h1>
-        <div class="w-16 h-1 bg-indigo-600 mx-auto mb-8"></div>
-        <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6 text-left">
-          NextGen Athletix was founded to introduce a transformative element to the athletic journey—opening doors for athletes, trainers, and coaches alike. While traditional platforms settle for basic stat tracking, NextGen Athletix is engineered to do more.
-        </p>
-        <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6 text-left">
-          We provide deep, verified performance analytics, advanced metrics, and a comprehensive scouting network designed to make the overall sports landscape more accurate, highly detailed, and rich with opportunity. Our platform goes beyond the numbers, delivering real insights to decision-makers and leveling the playing field for talent across the nation.
-        </p>
-        <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-10 text-left font-bold text-indigo-900">
-          My goal is to build the ultimate athlete evaluation ecosystem and propel sports into the future. Thank you for joining the revolution.
-        </p>
-        <div class="text-left border-t border-slate-100 pt-6">
-          <p class="font-black text-lg text-slate-900">— Marquis Savage</p>
-          <p class="text-xs font-bold text-indigo-600 uppercase tracking-widest mt-1">Founder & CEO, NextGen Athletix</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- VIEW: ATHLETE DATABASE (WITH FILTERS RESTORED) -->
+    <!-- VIEW: ATHLETE DATABASE -->
     <div x-show="currentView === 'search'" x-cloak class="space-y-6">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -273,7 +264,6 @@
             </div>
           </div>
         </template>
-        <!-- Empty State -->
         <template x-if="filteredAthletes.length === 0">
           <div class="col-span-full py-8 text-center text-slate-400 text-sm font-medium border-2 border-dashed border-slate-200 rounded-2xl">
             No athletes found matching your search.
@@ -290,7 +280,7 @@
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <template x-for="vp in vpDirectoryList" :key="vp.id">
-          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition cursor-pointer" @click="selectVp(vp)">
             <div class="flex items-center space-x-4">
               <template x-if="vp.photo_url"><img :src="vp.photo_url" class="w-12 h-12 rounded-xl object-cover"></template>
               <template x-if="!vp.photo_url"><div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 font-bold flex items-center justify-center text-lg" x-text="vp.full_name ? vp.full_name[0] : 'V'"></div></template>
@@ -299,12 +289,51 @@
                 <p class="text-xs text-slate-500" x-text="vp.title_or_org"></p>
               </div>
             </div>
-            <p class="text-xs text-slate-600 mt-4 italic" x-text="vp.bio || 'Verified Member of NextGen Athletix.'"></p>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-medium">
+              <span class="text-indigo-600 font-bold">View Full Profile &rarr;</span>
+            </div>
           </div>
         </template>
         <template x-if="vpDirectoryList.length === 0">
            <div class="col-span-full py-8 text-center text-slate-400 text-sm font-medium border-2 border-dashed border-slate-200 rounded-2xl">Loading network personnel...</div>
         </template>
+      </div>
+    </div>
+
+    <!-- VIEW: INDIVIDUAL VP PROFILE (PUBLIC) -->
+    <div x-show="currentView === 'vp_profile_view'" x-cloak class="max-w-3xl mx-auto space-y-6" x-if="selectedVp">
+      <button @click="setView('vp_directory')" class="text-xs font-bold text-slate-500 hover:text-indigo-600 flex items-center space-x-1"><i data-lucide="arrow-left" class="w-4 h-4"></i><span>Back to Directory</span></button>
+      <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
+           <template x-if="selectedVp.photo_url"><img :src="selectedVp.photo_url" class="w-24 h-24 rounded-2xl object-cover shadow"></template>
+           <template x-if="!selectedVp.photo_url"><div class="w-24 h-24 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-700 font-black flex items-center justify-center text-4xl" x-text="selectedVp.full_name ? selectedVp.full_name[0] : 'V'"></div></template>
+           <div>
+              <h1 class="text-3xl font-black text-slate-900" x-text="selectedVp.full_name"></h1>
+              <p class="text-sm font-bold text-slate-500 mt-1" x-text="selectedVp.title_or_org"></p>
+              <span class="inline-flex items-center space-x-1 bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded mt-2 uppercase tracking-widest"><i data-lucide="check-circle" class="w-3 h-3"></i><span>Verified</span></span>
+           </div>
+        </div>
+        
+        <div class="mt-8 border-t border-slate-100 pt-6">
+           <h3 class="text-sm font-black text-slate-900 uppercase tracking-wider mb-4">Contact Information</h3>
+           <template x-if="!selectedVp.is_private">
+              <div class="flex flex-col space-y-2 text-sm text-slate-700">
+                 <div class="flex items-center space-x-2"><i data-lucide="mail" class="w-4 h-4 text-slate-400"></i><span x-text="selectedVp.email"></span></div>
+                 <div class="flex items-center space-x-2"><i data-lucide="phone" class="w-4 h-4 text-slate-400"></i><span x-text="selectedVp.phone || 'No phone provided'"></span></div>
+              </div>
+           </template>
+           <template x-if="selectedVp.is_private">
+              <div class="bg-slate-50 text-slate-600 border border-slate-200 p-4 rounded-xl text-xs font-bold flex items-center space-x-2">
+                <i data-lucide="shield" class="w-4 h-4 text-indigo-500"></i>
+                <span>This VP is not currently sharing their contact information with the public.</span>
+              </div>
+           </template>
+        </div>
+
+        <div class="mt-8 border-t border-slate-100 pt-6">
+           <h3 class="text-sm font-black text-slate-900 uppercase tracking-wider mb-4">Bio & Accolades</h3>
+           <p class="text-sm text-slate-600 leading-relaxed whitespace-pre-line" x-text="selectedVp.bio || 'Verified member of the NextGen Athletix scouting network.'"></p>
+        </div>
       </div>
     </div>
 
@@ -314,43 +343,68 @@
         <h1 class="text-3xl font-black text-slate-900">National Stat Tracking & References</h1>
         <p class="text-slate-500 text-sm max-w-2xl mx-auto">Cross-reference our verified combine metrics with live-game production and national recruiting rankings via our trusted external partners.</p>
       </div>
-
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- MaxPreps -->
         <a href="https://www.maxpreps.com" target="_blank" class="block group bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-xl transition-all hover:border-indigo-300">
           <div class="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition"><i data-lucide="activity" class="w-6 h-6"></i></div>
           <h2 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-indigo-600 transition">MaxPreps Live Stats</h2>
           <p class="text-sm text-slate-500 mb-4">Access up-to-date live game stats, high school state leaderboards, team rankings, and division alignments.</p>
           <span class="text-xs font-bold text-indigo-600 flex items-center space-x-1"><span>Launch MaxPreps Hub</span><i data-lucide="external-link" class="w-3 h-3"></i></span>
         </a>
-
-        <!-- 247 Sports -->
         <a href="https://247sports.com" target="_blank" class="block group bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-xl transition-all hover:border-indigo-300">
           <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition"><i data-lucide="target" class="w-6 h-6"></i></div>
           <h2 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-indigo-600 transition">247Sports Recruiting</h2>
           <p class="text-sm text-slate-500 mb-4">View the industry standard composite star rankings, college commitments, and national recruiting news.</p>
           <span class="text-xs font-bold text-indigo-600 flex items-center space-x-1"><span>Launch 247Sports Hub</span><i data-lucide="external-link" class="w-3 h-3"></i></span>
         </a>
-
-        <!-- Rivals -->
-        <a href="https://n.rivals.com" target="_blank" class="block group bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-xl transition-all hover:border-indigo-300">
-          <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition"><i data-lucide="star" class="w-6 h-6"></i></div>
-          <h2 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-indigo-600 transition">Rivals Rankings</h2>
-          <p class="text-sm text-slate-500 mb-4">Check elite camp evaluations, regional top prospect lists, and collegiate scholarship offer tracking.</p>
-          <span class="text-xs font-bold text-indigo-600 flex items-center space-x-1"><span>Launch Rivals Hub</span><i data-lucide="external-link" class="w-3 h-3"></i></span>
-        </a>
-
-        <!-- On3 -->
-        <a href="https://www.on3.com" target="_blank" class="block group bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-xl transition-all hover:border-indigo-300">
-          <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition"><i data-lucide="trending-up" class="w-6 h-6"></i></div>
-          <h2 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-indigo-600 transition">On3 NIL & Valuation</h2>
-          <p class="text-sm text-slate-500 mb-4">Analyze high school player valuations, NIL market trackers, and modern recruiting intelligence.</p>
-          <span class="text-xs font-bold text-indigo-600 flex items-center space-x-1"><span>Launch On3 Hub</span><i data-lucide="external-link" class="w-3 h-3"></i></span>
-        </a>
       </div>
     </div>
 
-    <!-- VIEW: ATHLETE PROFILE WITH DETAILED HISTORY -->
+    <!-- VIEW: BECOME A SPONSOR -->
+    <div x-show="currentView === 'sponsor'" x-cloak class="max-w-4xl mx-auto space-y-10">
+      <div class="bg-slate-900 text-white rounded-3xl p-8 sm:p-12 shadow-xl">
+        <span class="px-3 py-1 bg-amber-500/20 border border-amber-400/30 text-amber-300 text-xs font-extrabold rounded-full uppercase tracking-wider inline-block mb-3">Sought-After Partner Network</span>
+        <h1 class="text-3xl sm:text-5xl font-black tracking-tight">Sponsor NextGen Athletix</h1>
+        <p class="text-slate-300 text-sm leading-relaxed mt-3 max-w-2xl">
+          Gain exclusive brand exposure across our youth sports developmental pipelines, high school combine showcases, and college recruitment databases.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm space-y-3">
+          <span class="text-xs font-bold text-indigo-600 uppercase">Tier 1</span>
+          <h3 class="font-black text-slate-900 text-lg">Local Academy Partner</h3>
+          <p class="text-xs text-slate-500 leading-relaxed">Ideal for local training facilities, speed coaches, and equipment suppliers targeting regional youth athletes.</p>
+        </div>
+        <div class="bg-white border border-indigo-300 ring-2 ring-indigo-500/20 p-6 rounded-2xl shadow-sm space-y-3 relative">
+          <span class="text-xs font-bold text-amber-600 uppercase">Tier 2 • Most Popular</span>
+          <h3 class="font-black text-slate-900 text-lg">State Showcase Sponsor</h3>
+          <p class="text-xs text-slate-500 leading-relaxed">Prominent placement across state athlete search queries and high school combine leaderboards.</p>
+        </div>
+        <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm space-y-3">
+          <span class="text-xs font-bold text-emerald-600 uppercase">Tier 3</span>
+          <h3 class="font-black text-slate-900 text-lg">National Title Partner</h3>
+          <p class="text-xs text-slate-500 leading-relaxed">Exclusive brand integration on national leaderboards, news feeds, and scout report headers.</p>
+        </div>
+      </div>
+
+      <div class="bg-white border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-sm">
+        <div class="flex items-center justify-between mb-6">
+           <h3 class="text-xl font-bold text-slate-900">Submit Sponsorship Inquiry</h3>
+           <span class="bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wide">Valid for 365 Days</span>
+        </div>
+        <p class="text-xs text-slate-500 mb-6">All approved sponsorships are valid for 1 full year (365 days) from the date of donation/activation.</p>
+        <form @submit.prevent="submitSponsorForm()" class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Organization Name</label><input type="text" x-model="sponsorForm.orgName" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800"></div>
+            <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Contact Name</label><input type="text" x-model="sponsorForm.contactName" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800"></div>
+          </div>
+          <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Phone or Email</label><input type="text" x-model="sponsorForm.contactInfo" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800"></div>
+          <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">Submit Inquiry to Founder</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- VIEW: ATHLETE PROFILE -->
     <div x-show="currentView === 'profile'" x-cloak class="space-y-8" x-if="selectedAthlete">
       <!-- Profile Header -->
       <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
@@ -372,7 +426,6 @@
 
       <!-- Current Metrics Dashboard -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
         <!-- Scouting Metrics -->
         <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
           <h2 class="text-lg font-bold text-slate-900 mb-4 border-b pb-2">Positional Scouting Profile</h2>
@@ -381,7 +434,7 @@
               <div class="flex items-center justify-between bg-slate-50 p-3 rounded-lg border border-slate-100">
                 <div>
                   <span class="text-xs font-bold text-slate-700 uppercase" x-text="cat"></span>
-                  <button @click="openMetricHistory(cat)" class="block text-[10px] font-bold text-indigo-600 hover:underline mt-1">View History & Details &rarr;</button>
+                  <button @click="openMetricHistory(cat)" class="block text-[10px] font-bold text-indigo-600 hover:underline mt-1">View More &rarr;</button>
                 </div>
                 <div class="text-xl font-black text-slate-900" x-text="getLatestMetricScore(selectedAthlete, cat) || '--'"></div>
               </div>
@@ -394,15 +447,19 @@
           <h2 class="text-lg font-bold text-slate-900 mb-4 border-b pb-2">Verified Combine & Physicals</h2>
           <div class="grid grid-cols-2 gap-3">
             <template x-for="test in physicalTestsList" :key="test.key">
-              <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 relative">
-                <span class="text-[10px] font-bold text-slate-500 uppercase block" x-text="test.label"></span>
-                <div class="text-lg font-black text-emerald-700 my-1 flex items-center space-x-2">
-                  <span x-text="getLatestMetricValue(selectedAthlete, test.key) || '--'"></span>
-                  <template x-if="getLatestMetricPhoto(selectedAthlete, test.key)">
-                    <a :href="getLatestMetricPhoto(selectedAthlete, test.key)" target="_blank" class="text-blue-500 hover:text-blue-700 ml-1" title="View Verification Media"><i data-lucide="image" class="w-4 h-4"></i></a>
-                  </template>
+              <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 flex flex-col justify-between h-full">
+                <div>
+                   <span class="text-[10px] font-bold text-slate-500 uppercase block" x-text="test.label"></span>
+                   <div class="text-lg font-black text-emerald-700 mt-1 mb-2">
+                     <span x-text="getLatestMetricValue(selectedAthlete, test.key) || '--'"></span>
+                   </div>
                 </div>
-                <button @click="openMetricHistory(test.key, test.label)" class="text-[10px] font-bold text-indigo-600 hover:underline">View History &rarr;</button>
+                <div>
+                   <button @click="openMetricHistory(test.key, test.label)" class="text-[10px] font-bold text-indigo-600 hover:underline block">View More &rarr;</button>
+                   <template x-if="getLatestMetricPhoto(selectedAthlete, test.key)">
+                     <span class="block text-[9px] font-black text-emerald-600 uppercase tracking-widest mt-0.5">VIDEO</span>
+                   </template>
+                </div>
               </div>
             </template>
           </div>
@@ -431,7 +488,7 @@
               <div class="text-right flex items-center space-x-3">
                 <span class="font-black text-lg text-indigo-600" x-text="log.val"></span>
                 <template x-if="log.media">
-                  <a :href="log.media" target="_blank" class="px-2 py-1 bg-blue-50 text-blue-600 font-bold rounded flex items-center space-x-1"><i data-lucide="external-link" class="w-3 h-3"></i><span>Media</span></a>
+                  <a :href="log.media" target="_blank" class="px-2 py-1 bg-emerald-50 text-emerald-600 font-bold rounded flex items-center space-x-1"><i data-lucide="video" class="w-3 h-3"></i><span>Video</span></a>
                 </template>
               </div>
             </div>
@@ -536,7 +593,7 @@
               <button type="button" @click="submitEvaluation()" class="w-full py-3 mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition">Publish Verified Report</button>
             </div>
             
-            <!-- VP Profile Tab -->
+            <!-- VP Profile Tab (WITH DIRECT PHOTO UPLOAD & PRIVACY TOGGLE) -->
             <div x-show="activeVpTab === 'profile'">
               <h3 class="text-lg font-bold text-slate-900 mb-4">Edit Personnel Profile</h3>
               <form @submit.prevent="updateVpProfile()" class="space-y-4">
@@ -544,9 +601,18 @@
                   <div><label class="text-xs font-bold text-slate-500 uppercase">Full Name</label><input type="text" x-model="vpProfileForm.name" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
                   <div><label class="text-xs font-bold text-slate-500 uppercase">Organization / Position</label><input type="text" x-model="vpProfileForm.org" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
                   <div><label class="text-xs font-bold text-slate-500 uppercase">Contact Phone</label><input type="text" x-model="vpProfileForm.phone" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
-                  <div><label class="text-xs font-bold text-slate-500 uppercase">Photo URL</label><input type="url" x-model="vpProfileForm.photoUrl" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
+                  <div>
+                     <label class="text-xs font-bold text-slate-500 uppercase">Profile Photo (Direct Upload)</label>
+                     <input type="file" id="vpPhotoInput" accept="image/*" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs">
+                  </div>
                 </div>
                 <div><label class="text-xs font-bold text-slate-500 uppercase">Bio / Credentials</label><textarea x-model="vpProfileForm.bio" rows="3" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></textarea></div>
+                
+                <label class="flex items-center space-x-2 mt-4 cursor-pointer bg-slate-50 p-3 rounded-lg border border-slate-200">
+                  <input type="checkbox" x-model="vpProfileForm.isPrivate" class="rounded text-indigo-600 w-4 h-4 border-slate-300">
+                  <span class="text-xs font-bold text-slate-700">Hide my email and phone number from the public directory</span>
+                </label>
+
                 <button type="submit" class="w-full py-3 bg-indigo-600 text-white font-bold text-xs rounded-xl shadow-md">Save Profile Settings</button>
               </form>
             </div>
@@ -604,6 +670,27 @@
       </template>
     </div>
 
+    <!-- VIEW: ABOUT US (MOVED TO END) -->
+    <div x-show="currentView === 'about'" x-cloak class="max-w-4xl mx-auto space-y-8">
+      <div class="bg-white border border-slate-200 rounded-3xl p-8 sm:p-12 shadow-md text-center">
+        <h1 class="text-3xl sm:text-4xl font-black text-slate-900 mb-6">Pioneering the Future of Scouting</h1>
+        <div class="w-16 h-1 bg-indigo-600 mx-auto mb-8"></div>
+        <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6 text-left">
+          NextGen Athletix was founded to introduce a transformative element to the athletic journey—opening doors for athletes, trainers, and coaches alike. While traditional platforms settle for basic stat tracking, NextGen Athletix is engineered to do more.
+        </p>
+        <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6 text-left">
+          We provide deep, verified performance analytics, advanced metrics, and a comprehensive scouting network designed to make the overall sports landscape more accurate, highly detailed, and rich with opportunity. Our platform goes beyond the numbers, delivering real insights to decision-makers and leveling the playing field for talent across the nation.
+        </p>
+        <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-10 text-left font-bold text-indigo-900">
+          My goal is to build the ultimate athlete evaluation ecosystem and propel sports into the future. Thank you for joining the revolution.
+        </p>
+        <div class="text-left border-t border-slate-100 pt-6">
+          <p class="font-black text-lg text-slate-900">— Marquis Savage</p>
+          <p class="text-xs font-bold text-indigo-600 uppercase tracking-widest mt-1">Founder & CEO, NextGen Athletix</p>
+        </div>
+      </div>
+    </div>
+
   </main>
   
   <footer class="border-t border-slate-200 bg-white py-6 mt-12 text-center text-xs text-slate-500 font-black tracking-widest">NEXTGEN ATHLETIX &copy; 2026</footer>
@@ -628,8 +715,11 @@
         searchQuery: '',
         filterPosition: 'ALL',
 
+        // Forms
         authForm: { email: '', password: '', fullName: '', orgName: '', phone: '' },
-        vpProfileForm: { name: '', org: '', phone: '', bio: '', photoUrl: '' },
+        vpProfileForm: { name: '', org: '', phone: '', bio: '', photoUrl: '', isPrivate: false },
+        sponsorForm: { orgName: '', contactName: '', contactInfo: '' },
+        
         evalMode: 'scouting',
         newAthleteForm: { firstName: '', lastName: '', position: 'WR', highSchool: '' },
         evalForm: { athleteId: '', scouting: {}, physical: {}, anthro: {} },
@@ -665,14 +755,21 @@
         // Mock DB
         athletes: [
           { id: 'ATH-1', name: 'DeAndre Carter', initials: 'DC', highSchool: 'Saguaro HS', state: 'AZ', position: 'WR', photoUrl: '', evaluations: [
-            { id: 1, date: '2026-09-01', evaluator: 'Coach Vance', metrics: { 'Route Running': { score: 94 }, 'forty': { value: '4.42' } } },
+            { id: 1, date: '2026-09-01', evaluator: 'Coach Vance', metrics: { 'Route Running': { score: 94 }, 'forty': { value: '4.42', media: 'https://example.com/video.mp4' } } },
             { id: 2, date: '2026-10-15', evaluator: 'Coach Vance', metrics: { 'Route Running': { score: 96 }, 'forty': { value: '4.38' } } }
           ]},
           { id: 'ATH-2', name: 'Javon Mitchell', initials: 'JM', highSchool: 'Chandler HS', state: 'AZ', position: 'RB', photoUrl: '', evaluations: [
             { id: 3, date: '2026-10-02', evaluator: 'Coach Miller', metrics: { 'Vision': { score: 88 }, 'forty': { value: '4.55' }, 'vertical': { value: '34' } } }
+          ]},
+          { id: 'ATH-3', name: 'Elijah Brown', initials: 'EB', highSchool: 'Basha HS', state: 'AZ', position: 'QB', photoUrl: '', evaluations: [
+            { id: 4, date: '2026-10-10', evaluator: 'Coach Smith', metrics: { 'Arm Strength': { score: 92 }, 'Accuracy': { score: 90 } } }
+          ]},
+          { id: 'ATH-4', name: 'Mason Taylor', initials: 'MT', highSchool: 'Hamilton HS', state: 'AZ', position: 'LB', photoUrl: '', evaluations: [
+            { id: 5, date: '2026-10-12', evaluator: 'Coach Jones', metrics: { 'Tackling': { score: 85 } } }
           ]}
         ],
         selectedAthlete: null,
+        selectedVp: null,
 
         init() {
           const SUPABASE_URL = 'https://dixvkrnelykxsbrbjlld.supabase.co';
@@ -683,7 +780,7 @@
             this.loadVerifiedPersonnel();
           } else {
              // Fallback mock for testing layout without backend connection
-             this.vpDirectoryList = [{id:'vp1', full_name: 'Marquis Savage', title_or_org: 'NextGen Athletix Founder', bio: 'Creator of the ultimate scouting network.'}];
+             this.vpDirectoryList = [{id:'vp1', full_name: 'Marquis Savage', title_or_org: 'NextGen Athletix Founder', bio: 'Creator of the ultimate scouting network.', email: 'test@test.com', is_private: false}];
           }
           this.resetEvalForm();
           setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 100);
@@ -697,6 +794,16 @@
             });
         },
 
+        get topAthletes() {
+            return [...this.athletes].sort((a, b) => {
+                let scoreA = this.getOverallScore(a);
+                let scoreB = this.getOverallScore(b);
+                scoreA = typeof scoreA === 'number' ? scoreA : 0;
+                scoreB = typeof scoreB === 'number' ? scoreB : 0;
+                return scoreB - scoreA;
+            }).slice(0, 3);
+        },
+
         async checkSession() {
           if (!window.db) return;
           const { data: { session } } = await window.db.auth.getSession();
@@ -707,7 +814,10 @@
                 id: profile.id, name: profile.full_name || 'New User', initials: profile.full_name ? profile.full_name[0] : 'U',
                 role: profile.role, org: profile.title_or_org, phone: profile.phone, bio: profile.bio, photoUrl: profile.photo_url
               };
-              this.vpProfileForm = { name: profile.full_name, org: profile.title_or_org, phone: profile.phone, bio: profile.bio, photoUrl: profile.photo_url };
+              this.vpProfileForm = { 
+                name: profile.full_name, org: profile.title_or_org, phone: profile.phone, 
+                bio: profile.bio, photoUrl: profile.photo_url, isPrivate: profile.is_private || false 
+              };
               if (profile.role === 'admin') this.loadAdminData();
             }
           }
@@ -718,7 +828,7 @@
           try {
               const { data } = await window.db.from('users').select('*').eq('is_approved', true).eq('role', 'vp').order('created_at', { ascending: false });
               if (data && data.length > 0) this.vpDirectoryList = data;
-              else this.vpDirectoryList = [{id:'vp1', full_name: 'Marquis Savage', title_or_org: 'NextGen Athletix', bio: 'Founder'}]; // Safe fallback
+              else this.vpDirectoryList = [{id:'vp1', full_name: 'Marquis Savage', title_or_org: 'NextGen Athletix', bio: 'Founder', is_private: false}];
           } catch(e) { console.log(e); }
         },
 
@@ -755,16 +865,32 @@
         
         async updateVpProfile() {
           if(!window.db) return;
+          
+          let uploadedUrl = this.vpProfileForm.photoUrl;
+          const photoInput = document.getElementById('vpPhotoInput');
+          if (photoInput && photoInput.files.length > 0) {
+            const newUrl = await this.uploadFileToSupabase(photoInput.files[0]);
+            if(newUrl) uploadedUrl = newUrl;
+          }
+
           await window.db.from('users').update({
             full_name: this.vpProfileForm.name, title_or_org: this.vpProfileForm.org,
-            phone: this.vpProfileForm.phone, bio: this.vpProfileForm.bio, photo_url: this.vpProfileForm.photoUrl
+            phone: this.vpProfileForm.phone, bio: this.vpProfileForm.bio, 
+            photo_url: uploadedUrl, is_private: this.vpProfileForm.isPrivate
           }).eq('id', this.currentUser.id);
-          alert('Profile Updated');
+          
+          alert('Profile Updated Successfully');
+          if(photoInput) photoInput.value = "";
           this.checkSession();
         },
 
         async approvePersonnel(id) { await window.db.from('users').update({ is_approved: true }).eq('id', id); this.loadAdminData(); },
         async rejectPersonnel(id) { await window.db.from('users').delete().eq('id', id); this.loadAdminData(); },
+
+        submitSponsorForm() {
+          alert('Inquiry Submitted! Sponsorships are active for 365 days upon approval.');
+          this.sponsorForm = { orgName: '', contactName: '', contactInfo: '' };
+        },
 
         setView(view) { 
             this.currentView = view; 
@@ -773,6 +899,7 @@
         },
         
         selectAthlete(athlete) { this.selectedAthlete = athlete; this.setView('profile'); },
+        selectVp(vp) { this.selectedVp = vp; this.setView('vp_profile_view'); },
 
         // DIRECT UPLOAD TO SUPABASE BUCKET
         async uploadFileToSupabase(file) {
