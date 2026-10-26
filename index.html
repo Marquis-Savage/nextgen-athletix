@@ -48,29 +48,33 @@
       <!-- Main Navigation -->
       <nav class="flex items-center space-x-1 sm:space-x-2">
         <button type="button" @click="setView('home')" :class="currentView === 'home' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5">
-          <i data-lucide="home" class="w-4 h-4"></i><span class="hidden sm:inline">Home</span>
+          <i data-lucide="home" class="w-4 h-4"></i><span class="hidden xl:inline">Home</span>
         </button>
 
         <button type="button" @click="setView('about')" :class="currentView === 'about' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5">
-          <i data-lucide="info" class="w-4 h-4"></i><span class="hidden sm:inline">About</span>
+          <i data-lucide="info" class="w-4 h-4"></i><span class="hidden xl:inline">About</span>
         </button>
 
         <button type="button" @click="setView('search')" :class="currentView === 'search' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5">
-          <i data-lucide="database" class="w-4 h-4"></i><span class="hidden sm:inline">Database</span>
+          <i data-lucide="database" class="w-4 h-4"></i><span class="hidden sm:inline">Athlete Database</span>
         </button>
 
         <button type="button" @click="setView('vp_directory')" :class="currentView === 'vp_directory' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5">
-          <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i><span class="hidden sm:inline">Directory</span>
+          <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i><span class="hidden sm:inline">Verified Personnel Directory</span>
+        </button>
+        
+        <button type="button" @click="setView('stats')" :class="currentView === 'stats' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5">
+          <i data-lucide="bar-chart" class="w-4 h-4 text-amber-500"></i><span class="hidden sm:inline">External Stats</span>
         </button>
 
         <button type="button" @click="setView('vp_portal')" :class="currentView === 'vp_portal' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5">
-          <i data-lucide="user-check" class="w-4 h-4 text-indigo-600"></i><span class="hidden sm:inline">VP Portal</span>
+          <i data-lucide="user-check" class="w-4 h-4 text-indigo-600"></i><span class="hidden xl:inline">VP Portal</span>
         </button>
 
         <!-- Admin Tab -->
         <template x-if="currentUser && currentUser.role === 'admin'">
           <button type="button" @click="setView('admin')" :class="currentView === 'admin' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-transparent transition flex items-center space-x-1.5">
-            <i data-lucide="shield" class="w-4 h-4 text-rose-600"></i><span class="hidden sm:inline">Admin</span>
+            <i data-lucide="shield" class="w-4 h-4 text-rose-600"></i><span class="hidden xl:inline">Admin</span>
           </button>
         </template>
       </nav>
@@ -95,20 +99,19 @@
     </div>
   </header>
 
-  <!-- AUTHENTICATION MODAL (Remains unchanged logically) -->
-  <div x-show="showAuthModal" x-cloak class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <!-- AUTHENTICATION MODAL -->
+  <div x-show="showAuthModal" x-cloak class="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl relative" @click.away="showAuthModal = false">
       <button type="button" @click="showAuthModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold text-lg">&times;</button>
       <div class="flex border-b border-slate-200 mb-6">
         <button type="button" @click="authTab = 'signin'" :class="authTab === 'signin' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-slate-400'" class="pb-2 text-xs font-bold uppercase flex-1">Sign In</button>
         <button type="button" @click="authTab = 'register'" :class="authTab === 'register' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-slate-400'" class="pb-2 text-xs font-bold uppercase flex-1">VP Registration</button>
       </div>
-      <!-- Forms (Same as previous) -->
       <div x-show="authTab === 'signin'">
         <form @submit.prevent="handleSignIn()" class="space-y-4">
           <div><label class="block text-xs font-bold text-slate-500 uppercase">Email</label><input type="email" x-model="authForm.email" required class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
           <div><label class="block text-xs font-bold text-slate-500 uppercase">Password</label><input type="password" x-model="authForm.password" required class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
-          <button type="submit" class="w-full py-3 bg-indigo-600 text-white font-bold text-xs rounded-xl shadow-md">Sign In</button>
+          <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md">Sign In</button>
         </form>
       </div>
       <div x-show="authTab === 'register'">
@@ -121,7 +124,7 @@
             <div><label class="block text-xs font-bold text-slate-500 uppercase">Email</label><input type="email" x-model="authForm.email" required class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
             <div><label class="block text-xs font-bold text-slate-500 uppercase">Password</label><input type="password" x-model="authForm.password" required class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
           </div>
-          <button type="submit" class="w-full py-3 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-md">Submit Registration</button>
+          <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md">Submit Registration</button>
         </form>
       </div>
     </div>
@@ -130,7 +133,7 @@
   <!-- MAIN CONTENT CONTAINER -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
 
-    <!-- VIEW: HOME PAGE -->
+    <!-- VIEW 1: HOME PAGE -->
     <div x-show="currentView === 'home'" x-cloak class="space-y-12">
       <!-- Hero -->
       <section class="bg-gradient-to-br from-indigo-950 via-indigo-900 to-slate-900 rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden">
@@ -152,13 +155,13 @@
           <button @click="setView('search')" class="text-xs font-bold text-indigo-600 hover:underline">Full Database &rarr;</button>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <template x-for="athlete in athletes.slice(0,3)" :key="athlete.id">
+          <template x-for="athlete in filteredAthletes.slice(0,3)" :key="athlete.id">
             <div class="bg-white border border-slate-200 hover:border-indigo-300 rounded-2xl p-5 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col justify-between" @click="selectAthlete(athlete)">
               <div class="flex items-start justify-between">
                 <div class="flex items-center space-x-3">
                   <template x-if="athlete.photoUrl"><img :src="athlete.photoUrl" class="w-12 h-12 rounded-xl object-cover border border-slate-200"></template>
                   <template x-if="!athlete.photoUrl"><div class="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center font-black text-indigo-600" x-text="athlete.initials"></div></template>
-                  <div><h3 class="font-bold text-slate-900 text-base" x-text="athlete.name"></h3><p class="text-xs text-slate-500" x-text="athlete.highSchool + ' • ' + athlete.state"></p></div>
+                  <div><h3 class="font-bold text-slate-900 text-base" x-text="athlete.name"></h3><p class="text-xs text-slate-500" x-text="athlete.highSchool"></p></div>
                 </div>
                 <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 font-bold text-xs rounded-lg" x-text="athlete.position"></span>
               </div>
@@ -222,6 +225,131 @@
       </div>
     </div>
 
+    <!-- VIEW: ATHLETE DATABASE (WITH FILTERS RESTORED) -->
+    <div x-show="currentView === 'search'" x-cloak class="space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-black text-slate-900">Athlete Database</h1>
+          <p class="text-xs text-slate-500">Search and browse verified prospects.</p>
+        </div>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Player Name</label>
+            <input type="text" x-model="searchQuery" placeholder="Search athlete..." class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Position</label>
+            <select x-model="filterPosition" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
+              <option value="ALL">All Positions</option>
+              <option value="QB">Quarterback</option><option value="RB">Running Back</option><option value="WR">Wide Receiver</option>
+              <option value="TE">Tight End</option><option value="OL">Offensive Line</option><option value="DL">Defensive Line</option>
+              <option value="EDGE">Edge Rusher</option><option value="LB">Linebacker</option><option value="CB">Cornerback</option>
+              <option value="S">Safety</option><option value="K">Kicker</option><option value="P">Punter</option><option value="LS">Long Snapper</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <template x-for="athlete in filteredAthletes" :key="athlete.id">
+          <div class="bg-white border border-slate-200 hover:border-indigo-300 rounded-2xl p-5 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col justify-between" @click="selectAthlete(athlete)">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center space-x-3">
+                <template x-if="athlete.photoUrl"><img :src="athlete.photoUrl" class="w-12 h-12 rounded-xl object-cover border border-slate-200"></template>
+                <template x-if="!athlete.photoUrl"><div class="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center font-black text-indigo-600" x-text="athlete.initials"></div></template>
+                <div>
+                  <h3 class="font-bold text-slate-900 text-base" x-text="athlete.name"></h3>
+                  <p class="text-xs text-slate-500" x-text="athlete.highSchool"></p>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 font-bold text-xs rounded-lg block" x-text="athlete.position"></span>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-medium">
+              <span class="text-emerald-600"><span x-text="athlete.evaluations.length"></span> Verified Logs</span>
+              <span class="text-indigo-600 font-bold">View Profile &rarr;</span>
+            </div>
+          </div>
+        </template>
+        <!-- Empty State -->
+        <template x-if="filteredAthletes.length === 0">
+          <div class="col-span-full py-8 text-center text-slate-400 text-sm font-medium border-2 border-dashed border-slate-200 rounded-2xl">
+            No athletes found matching your search.
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- VIEW: VERIFIED PERSONNEL DIRECTORY -->
+    <div x-show="currentView === 'vp_directory'" x-cloak class="space-y-6">
+      <div>
+        <h1 class="text-2xl font-black text-slate-900">Verified Personnel Directory</h1>
+        <p class="text-xs text-slate-500 mt-1">Connect with our approved network of elite coaches and scouts.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <template x-for="vp in vpDirectoryList" :key="vp.id">
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+            <div class="flex items-center space-x-4">
+              <template x-if="vp.photo_url"><img :src="vp.photo_url" class="w-12 h-12 rounded-xl object-cover"></template>
+              <template x-if="!vp.photo_url"><div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 font-bold flex items-center justify-center text-lg" x-text="vp.full_name ? vp.full_name[0] : 'V'"></div></template>
+              <div>
+                <h3 class="font-bold text-slate-900 text-base" x-text="vp.full_name"></h3>
+                <p class="text-xs text-slate-500" x-text="vp.title_or_org"></p>
+              </div>
+            </div>
+            <p class="text-xs text-slate-600 mt-4 italic" x-text="vp.bio || 'Verified Member of NextGen Athletix.'"></p>
+          </div>
+        </template>
+        <template x-if="vpDirectoryList.length === 0">
+           <div class="col-span-full py-8 text-center text-slate-400 text-sm font-medium border-2 border-dashed border-slate-200 rounded-2xl">Loading network personnel...</div>
+        </template>
+      </div>
+    </div>
+
+    <!-- VIEW: EXTERNAL STATS HUB -->
+    <div x-show="currentView === 'stats'" x-cloak class="max-w-5xl mx-auto space-y-8">
+      <div class="text-center space-y-3 mb-10">
+        <h1 class="text-3xl font-black text-slate-900">National Stat Tracking & References</h1>
+        <p class="text-slate-500 text-sm max-w-2xl mx-auto">Cross-reference our verified combine metrics with live-game production and national recruiting rankings via our trusted external partners.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- MaxPreps -->
+        <a href="https://www.maxpreps.com" target="_blank" class="block group bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-xl transition-all hover:border-indigo-300">
+          <div class="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition"><i data-lucide="activity" class="w-6 h-6"></i></div>
+          <h2 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-indigo-600 transition">MaxPreps Live Stats</h2>
+          <p class="text-sm text-slate-500 mb-4">Access up-to-date live game stats, high school state leaderboards, team rankings, and division alignments.</p>
+          <span class="text-xs font-bold text-indigo-600 flex items-center space-x-1"><span>Launch MaxPreps Hub</span><i data-lucide="external-link" class="w-3 h-3"></i></span>
+        </a>
+
+        <!-- 247 Sports -->
+        <a href="https://247sports.com" target="_blank" class="block group bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-xl transition-all hover:border-indigo-300">
+          <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition"><i data-lucide="target" class="w-6 h-6"></i></div>
+          <h2 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-indigo-600 transition">247Sports Recruiting</h2>
+          <p class="text-sm text-slate-500 mb-4">View the industry standard composite star rankings, college commitments, and national recruiting news.</p>
+          <span class="text-xs font-bold text-indigo-600 flex items-center space-x-1"><span>Launch 247Sports Hub</span><i data-lucide="external-link" class="w-3 h-3"></i></span>
+        </a>
+
+        <!-- Rivals -->
+        <a href="https://n.rivals.com" target="_blank" class="block group bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-xl transition-all hover:border-indigo-300">
+          <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition"><i data-lucide="star" class="w-6 h-6"></i></div>
+          <h2 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-indigo-600 transition">Rivals Rankings</h2>
+          <p class="text-sm text-slate-500 mb-4">Check elite camp evaluations, regional top prospect lists, and collegiate scholarship offer tracking.</p>
+          <span class="text-xs font-bold text-indigo-600 flex items-center space-x-1"><span>Launch Rivals Hub</span><i data-lucide="external-link" class="w-3 h-3"></i></span>
+        </a>
+
+        <!-- On3 -->
+        <a href="https://www.on3.com" target="_blank" class="block group bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-xl transition-all hover:border-indigo-300">
+          <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition"><i data-lucide="trending-up" class="w-6 h-6"></i></div>
+          <h2 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-indigo-600 transition">On3 NIL & Valuation</h2>
+          <p class="text-sm text-slate-500 mb-4">Analyze high school player valuations, NIL market trackers, and modern recruiting intelligence.</p>
+          <span class="text-xs font-bold text-indigo-600 flex items-center space-x-1"><span>Launch On3 Hub</span><i data-lucide="external-link" class="w-3 h-3"></i></span>
+        </a>
+      </div>
+    </div>
+
     <!-- VIEW: ATHLETE PROFILE WITH DETAILED HISTORY -->
     <div x-show="currentView === 'profile'" x-cloak class="space-y-8" x-if="selectedAthlete">
       <!-- Profile Header -->
@@ -271,7 +399,7 @@
                 <div class="text-lg font-black text-emerald-700 my-1 flex items-center space-x-2">
                   <span x-text="getLatestMetricValue(selectedAthlete, test.key) || '--'"></span>
                   <template x-if="getLatestMetricPhoto(selectedAthlete, test.key)">
-                    <a :href="getLatestMetricPhoto(selectedAthlete, test.key)" target="_blank" class="text-blue-500 hover:text-blue-700" title="View Verification Media"><i data-lucide="image" class="w-4 h-4"></i></a>
+                    <a :href="getLatestMetricPhoto(selectedAthlete, test.key)" target="_blank" class="text-blue-500 hover:text-blue-700 ml-1" title="View Verification Media"><i data-lucide="image" class="w-4 h-4"></i></a>
                   </template>
                 </div>
                 <button @click="openMetricHistory(test.key, test.label)" class="text-[10px] font-bold text-indigo-600 hover:underline">View History &rarr;</button>
@@ -312,37 +440,56 @@
       </div>
     </div>
 
-    <!-- VP PORTAL, DATABASE, DIRECTORY, ADMIN VIEWS REMAIN MOSTLY SAME, ADDING DIRECT UPLOADS -->
     <!-- VIEW 5: VP PORTAL -->
     <div x-show="currentView === 'vp_portal'" x-cloak class="max-w-4xl mx-auto space-y-8">
+      
+      <!-- Labeled Lock Screen for unauthenticated users -->
+      <template x-if="!currentUser || (currentUser.role !== 'vp' && currentUser.role !== 'admin')">
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 sm:p-12 text-center shadow-md my-12 max-w-lg mx-auto">
+          <div class="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="lock" class="w-10 h-10"></i></div>
+          <h2 class="text-2xl font-black text-slate-900">VP Portal Locked</h2>
+          <p class="text-slate-500 text-sm mt-3 mb-8">Only personnel verified by NEXTGEN ATHLETIX can view this page, add athletes, and update athlete information.</p>
+          <button type="button" @click="showAuthModal = true" class="px-6 py-3 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl shadow-md transition">Sign In / Register as VP</button>
+        </div>
+      </template>
+
+      <!-- Authenticated Portal View -->
       <template x-if="currentUser && (currentUser.role === 'vp' || currentUser.role === 'admin')">
         <div class="space-y-8">
           <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex items-center space-x-3">
             <button type="button" @click="activeVpTab = 'add'" :class="activeVpTab === 'add' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl">Add Athlete</button>
             <button type="button" @click="activeVpTab = 'update'" :class="activeVpTab === 'update' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl">Submit Grades</button>
+            <button type="button" @click="activeVpTab = 'profile'" :class="activeVpTab === 'profile' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-3 py-2 font-bold text-xs rounded-xl">My Profile</button>
           </div>
 
           <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-            <!-- Add Athlete Tab with FILE UPLOAD -->
+            
+            <!-- Add Athlete Tab -->
             <div x-show="activeVpTab === 'add'">
               <h3 class="text-lg font-bold text-slate-900 mb-4">Create Prospect Profile</h3>
               <form @submit.prevent="createNewAthlete()" class="grid grid-cols-2 gap-4">
                 <div><label class="text-xs font-bold text-slate-500 uppercase">First Name</label><input type="text" x-model="newAthleteForm.firstName" required class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
                 <div><label class="text-xs font-bold text-slate-500 uppercase">Last Name</label><input type="text" x-model="newAthleteForm.lastName" required class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
-                <div><label class="text-xs font-bold text-slate-500 uppercase">Position</label><select x-model="newAthleteForm.position" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"><option value="QB">QB</option><option value="WR">WR</option><option value="RB">RB</option></select></div>
+                <div>
+                  <label class="text-xs font-bold text-slate-500 uppercase">Position</label>
+                  <select x-model="newAthleteForm.position" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs">
+                    <option value="QB">Quarterback</option><option value="RB">Running Back</option><option value="WR">Wide Receiver</option>
+                    <option value="TE">Tight End</option><option value="OL">Offensive Line</option><option value="DL">Defensive Line</option>
+                    <option value="EDGE">Edge Rusher</option><option value="LB">Linebacker</option><option value="CB">Cornerback</option>
+                    <option value="S">Safety</option><option value="K">Kicker</option><option value="P">Punter</option><option value="LS">Long Snapper</option>
+                  </select>
+                </div>
                 <div><label class="text-xs font-bold text-slate-500 uppercase">High School</label><input type="text" x-model="newAthleteForm.highSchool" required class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
                 
-                <!-- Direct Photo Upload Input -->
                 <div class="col-span-2">
                   <label class="text-xs font-bold text-slate-500 uppercase">Profile Photo (Direct Upload)</label>
                   <input type="file" id="athletePhotoInput" accept="image/*" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs">
                 </div>
-                
                 <button type="submit" class="col-span-2 py-3 bg-indigo-600 text-white font-bold text-xs rounded-xl shadow-md">Create Profile</button>
               </form>
             </div>
 
-            <!-- Submit Grades Tab with FILE UPLOAD per test -->
+            <!-- Submit Grades Tab -->
             <div x-show="activeVpTab === 'update'">
               <h3 class="text-lg font-bold text-slate-900 mb-4">Submit Verified Metrics</h3>
               <div class="mb-4">
@@ -362,11 +509,11 @@
                   <h4 class="text-sm font-bold text-slate-900 mb-2 border-b pb-1">Combine Tests</h4>
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <template x-for="test in physicalTestsList" :key="test.key">
-                      <div class="bg-slate-50 p-3 rounded border">
+                      <div class="bg-slate-50 p-3 rounded border border-slate-200 shadow-sm">
                         <label class="block text-[10px] font-bold uppercase mb-1" x-text="test.label"></label>
                         <div class="flex flex-col space-y-2">
-                          <input type="text" :placeholder="test.placeholder + ' (Result)'" x-model="evalForm.physical[test.key].value" class="w-full border rounded p-1.5 text-xs">
-                          <input type="file" :id="'upload_' + test.key" accept="image/*,video/*" class="w-full border rounded p-1 text-[10px] text-slate-500">
+                          <input type="text" :placeholder="test.placeholder + ' (Result)'" x-model="evalForm.physical[test.key].value" class="w-full border rounded p-1.5 text-xs font-bold text-slate-800">
+                          <input type="file" :id="'upload_' + test.key" accept="image/*,video/*" class="w-full border rounded p-1 text-[10px] text-slate-500 bg-white">
                         </div>
                       </div>
                     </template>
@@ -376,14 +523,81 @@
               
               <!-- Scouting Tests -->
               <div x-show="evalMode === 'scouting'">
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <template x-for="cat in currentPositionCategories()" :key="cat">
-                    <div class="flex justify-between"><label class="text-[10px] font-bold uppercase" x-text="cat"></label><input type="number" x-model="evalForm.scouting[cat]" class="w-16 border rounded p-1 text-xs"></div>
+                    <div class="flex items-center justify-between bg-slate-50 p-3 rounded border border-slate-200 shadow-sm">
+                      <label class="text-[10px] font-bold uppercase" x-text="cat"></label>
+                      <input type="number" min="0" max="100" placeholder="0-100" x-model="evalForm.scouting[cat]" class="w-20 border rounded p-1.5 text-xs font-bold">
+                    </div>
                   </template>
                 </div>
               </div>
 
-              <button type="button" @click="submitEvaluation()" class="w-full py-3 mt-6 bg-emerald-600 text-white font-bold text-xs rounded-xl">Publish Verified Report</button>
+              <button type="button" @click="submitEvaluation()" class="w-full py-3 mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition">Publish Verified Report</button>
+            </div>
+            
+            <!-- VP Profile Tab -->
+            <div x-show="activeVpTab === 'profile'">
+              <h3 class="text-lg font-bold text-slate-900 mb-4">Edit Personnel Profile</h3>
+              <form @submit.prevent="updateVpProfile()" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                  <div><label class="text-xs font-bold text-slate-500 uppercase">Full Name</label><input type="text" x-model="vpProfileForm.name" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
+                  <div><label class="text-xs font-bold text-slate-500 uppercase">Organization / Position</label><input type="text" x-model="vpProfileForm.org" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
+                  <div><label class="text-xs font-bold text-slate-500 uppercase">Contact Phone</label><input type="text" x-model="vpProfileForm.phone" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
+                  <div><label class="text-xs font-bold text-slate-500 uppercase">Photo URL</label><input type="url" x-model="vpProfileForm.photoUrl" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
+                </div>
+                <div><label class="text-xs font-bold text-slate-500 uppercase">Bio / Credentials</label><textarea x-model="vpProfileForm.bio" rows="3" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></textarea></div>
+                <button type="submit" class="w-full py-3 bg-indigo-600 text-white font-bold text-xs rounded-xl shadow-md">Save Profile Settings</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- VIEW 6: ADMIN PORTAL -->
+    <div x-show="currentView === 'admin'" x-cloak class="max-w-5xl mx-auto space-y-8">
+      <template x-if="currentUser && currentUser.role === 'admin'">
+        <div class="space-y-8">
+          
+          <!-- Pending Requests -->
+          <div class="bg-white border border-rose-200 rounded-3xl p-6 shadow-sm">
+            <h2 class="text-xl font-bold text-slate-900 mb-4">Pending VP Applications</h2>
+            <div class="space-y-3">
+              <template x-for="applicant in pendingApplicants" :key="applicant.id">
+                <div class="flex items-center justify-between bg-slate-50 border p-4 rounded-2xl">
+                  <div>
+                    <span class="font-bold text-sm text-slate-900" x-text="applicant.name"></span>
+                    <p class="text-xs text-slate-500" x-text="applicant.org + ' • ' + applicant.email + ' • ' + (applicant.phone || 'No Phone')"></p>
+                  </div>
+                  <div class="flex space-x-2">
+                    <button @click="approvePersonnel(applicant.id)" class="px-3 py-1.5 bg-emerald-600 text-white font-bold text-xs rounded-lg">Approve</button>
+                    <button @click="rejectPersonnel(applicant.id)" class="px-3 py-1.5 bg-rose-50 text-rose-600 font-bold text-xs rounded-lg">Reject</button>
+                  </div>
+                </div>
+              </template>
+              <template x-if="pendingApplicants.length === 0"><p class="text-xs text-slate-400 italic">No pending applications.</p></template>
+            </div>
+          </div>
+
+          <!-- Active Directory Management -->
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+            <h2 class="text-xl font-bold text-slate-900 mb-4">Current Verified Personnel</h2>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-50 border-b">
+                  <tr><th class="p-3 font-bold uppercase text-slate-400">Name / Org</th><th class="p-3 font-bold uppercase text-slate-400">Contact</th><th class="p-3 font-bold uppercase text-slate-400">Date Joined</th></tr>
+                </thead>
+                <tbody>
+                  <template x-for="vp in vpDirectoryList" :key="vp.id">
+                    <tr class="border-b last:border-0 hover:bg-slate-50">
+                      <td class="p-3"><strong class="text-slate-900 block" x-text="vp.full_name"></strong><span x-text="vp.title_or_org"></span></td>
+                      <td class="p-3"><span class="block" x-text="vp.email"></span><span x-text="vp.phone || 'N/A'"></span></td>
+                      <td class="p-3" x-text="new Date(vp.created_at).toLocaleDateString()"></td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -409,8 +623,13 @@
         activeMetricKey: '',
         activeMetricLogs: [],
         chartInstance: null,
+        
+        // Search State
+        searchQuery: '',
+        filterPosition: 'ALL',
 
         authForm: { email: '', password: '', fullName: '', orgName: '', phone: '' },
+        vpProfileForm: { name: '', org: '', phone: '', bio: '', photoUrl: '' },
         evalMode: 'scouting',
         newAthleteForm: { firstName: '', lastName: '', position: 'WR', highSchool: '' },
         evalForm: { athleteId: '', scouting: {}, physical: {}, anthro: {} },
@@ -426,15 +645,31 @@
 
         positionCategories: {
           'QB': ['Arm Strength', 'Accuracy', 'Processing', 'Pocket Presence', 'Mechanics'],
+          'RB': ['Vision', 'Contact Balance', 'Burst', 'Pass Catching', 'Pass Protection'],
           'WR': ['Route Running', 'Hands', 'Release', 'YAC', 'Body Control'],
-          'RB': ['Vision', 'Contact Balance', 'Burst', 'Pass Catching', 'Pass Protection']
+          'TE': ['Run Blocking', 'Pass Catching', 'Route Running', 'Seam Threat', 'Release'],
+          'OL': ['Pass Sets', 'Run Blocking', 'Anchor', 'Mobility', 'Hand Placement'],
+          'DL': ['Get-off', 'Pass Rush Moves', 'Run Defense', 'Pad Level', 'Motor'],
+          'EDGE': ['Get-off', 'Bend', 'Pass Rush Moves', 'Run Defense', 'Motor'],
+          'LB': ['Tackling', 'Block Shedding', 'Coverage', 'Instincts', 'Pursuit'],
+          'CB': ['Man Coverage', 'Zone Coverage', 'Ball Skills', 'Tackling', 'Hips/Transitions'],
+          'S': ['Range', 'Zone Coverage', 'Ball Skills', 'Tackling', 'Run Support'],
+          'K': ['Leg Strength', 'Accuracy', 'Operation Time', 'Kickoffs'],
+          'P': ['Hangtime', 'Distance', 'Directional Punting', 'Operation Time'],
+          'LS': ['Snap Velocity', 'Accuracy', 'Blocking', 'Coverage']
         },
+
+        vpDirectoryList: [],
+        pendingApplicants: [],
 
         // Mock DB
         athletes: [
           { id: 'ATH-1', name: 'DeAndre Carter', initials: 'DC', highSchool: 'Saguaro HS', state: 'AZ', position: 'WR', photoUrl: '', evaluations: [
             { id: 1, date: '2026-09-01', evaluator: 'Coach Vance', metrics: { 'Route Running': { score: 94 }, 'forty': { value: '4.42' } } },
             { id: 2, date: '2026-10-15', evaluator: 'Coach Vance', metrics: { 'Route Running': { score: 96 }, 'forty': { value: '4.38' } } }
+          ]},
+          { id: 'ATH-2', name: 'Javon Mitchell', initials: 'JM', highSchool: 'Chandler HS', state: 'AZ', position: 'RB', photoUrl: '', evaluations: [
+            { id: 3, date: '2026-10-02', evaluator: 'Coach Miller', metrics: { 'Vision': { score: 88 }, 'forty': { value: '4.55' }, 'vertical': { value: '34' } } }
           ]}
         ],
         selectedAthlete: null,
@@ -445,18 +680,98 @@
           if (window.supabase) {
             window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             this.checkSession();
+            this.loadVerifiedPersonnel();
+          } else {
+             // Fallback mock for testing layout without backend connection
+             this.vpDirectoryList = [{id:'vp1', full_name: 'Marquis Savage', title_or_org: 'NextGen Athletix Founder', bio: 'Creator of the ultimate scouting network.'}];
           }
           this.resetEvalForm();
           setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 100);
         },
 
-        // Auth Logic (unchanged logically)
-        async checkSession() { /* Existing Logic */ },
-        async handleRegistration() { /* Existing Logic */ },
-        async handleSignIn() { /* Existing Logic */ },
-        async handleSignOut() { /* Existing Logic */ },
+        get filteredAthletes() {
+            return this.athletes.filter(a => {
+                if (this.searchQuery && !a.name.toLowerCase().includes(this.searchQuery.toLowerCase())) return false;
+                if (this.filterPosition !== 'ALL' && a.position !== this.filterPosition) return false;
+                return true;
+            });
+        },
 
-        setView(view) { this.currentView = view; setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 50); },
+        async checkSession() {
+          if (!window.db) return;
+          const { data: { session } } = await window.db.auth.getSession();
+          if (session) {
+            const { data: profile } = await window.db.from('users').select('*').eq('id', session.user.id).single();
+            if (profile) {
+              this.currentUser = {
+                id: profile.id, name: profile.full_name || 'New User', initials: profile.full_name ? profile.full_name[0] : 'U',
+                role: profile.role, org: profile.title_or_org, phone: profile.phone, bio: profile.bio, photoUrl: profile.photo_url
+              };
+              this.vpProfileForm = { name: profile.full_name, org: profile.title_or_org, phone: profile.phone, bio: profile.bio, photoUrl: profile.photo_url };
+              if (profile.role === 'admin') this.loadAdminData();
+            }
+          }
+        },
+
+        async loadVerifiedPersonnel() {
+          if (!window.db) return;
+          try {
+              const { data } = await window.db.from('users').select('*').eq('is_approved', true).eq('role', 'vp').order('created_at', { ascending: false });
+              if (data && data.length > 0) this.vpDirectoryList = data;
+              else this.vpDirectoryList = [{id:'vp1', full_name: 'Marquis Savage', title_or_org: 'NextGen Athletix', bio: 'Founder'}]; // Safe fallback
+          } catch(e) { console.log(e); }
+        },
+
+        async loadAdminData() {
+          if (!window.db) return;
+          const { data } = await window.db.from('users').select('*').eq('is_approved', false);
+          if (data) this.pendingApplicants = data.map(u => ({ id: u.id, name: u.full_name, org: u.title_or_org, email: u.email, phone: u.phone }));
+          this.loadVerifiedPersonnel();
+        },
+
+        async handleRegistration() {
+          if (!window.db) return;
+          const { data: authData, error: authError } = await window.db.auth.signUp({ email: this.authForm.email, password: this.authForm.password });
+          if (authError) { alert(authError.message); return; }
+          if (authData.user) {
+            await window.db.from('users').insert({
+              id: authData.user.id, full_name: this.authForm.fullName, email: this.authForm.email,
+              role: 'vp', is_approved: false, title_or_org: this.authForm.orgName, phone: this.authForm.phone
+            });
+            alert('Registration sent to admin for approval!');
+            this.showAuthModal = false;
+          }
+        },
+
+        async handleSignIn() {
+          const { error } = await window.db.auth.signInWithPassword({ email: this.authForm.email, password: this.authForm.password });
+          if (error) alert(error.message); else { await this.checkSession(); this.showAuthModal = false; }
+        },
+
+        async handleSignOut() {
+          await window.db.auth.signOut();
+          this.currentUser = null; this.setView('home');
+        },
+        
+        async updateVpProfile() {
+          if(!window.db) return;
+          await window.db.from('users').update({
+            full_name: this.vpProfileForm.name, title_or_org: this.vpProfileForm.org,
+            phone: this.vpProfileForm.phone, bio: this.vpProfileForm.bio, photo_url: this.vpProfileForm.photoUrl
+          }).eq('id', this.currentUser.id);
+          alert('Profile Updated');
+          this.checkSession();
+        },
+
+        async approvePersonnel(id) { await window.db.from('users').update({ is_approved: true }).eq('id', id); this.loadAdminData(); },
+        async rejectPersonnel(id) { await window.db.from('users').delete().eq('id', id); this.loadAdminData(); },
+
+        setView(view) { 
+            this.currentView = view; 
+            if(view === 'vp_directory') this.loadVerifiedPersonnel();
+            setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 50); 
+        },
+        
         selectAthlete(athlete) { this.selectedAthlete = athlete; this.setView('profile'); },
 
         // DIRECT UPLOAD TO SUPABASE BUCKET
@@ -506,7 +821,6 @@
             for (const test of this.physicalTestsList) {
               const val = this.evalForm.physical[test.key].value;
               if (val) {
-                // Check if file is attached
                 const fileInput = document.getElementById('upload_' + test.key);
                 let mediaUrl = '';
                 if(fileInput && fileInput.files.length > 0){
@@ -525,7 +839,6 @@
         resetEvalForm() {
           this.physicalTestsList.forEach(t => this.evalForm.physical[t.key] = { value: '' });
           this.evalForm.scouting = {};
-          // Clear all file inputs
           document.querySelectorAll('input[type="file"]').forEach(el => el.value = "");
         },
 
@@ -565,9 +878,7 @@
           let dataPoints = [];
           let labels = [];
 
-          // Sort logs chronologically for the graph
           const sortedEvals = [...this.selectedAthlete.evaluations].reverse();
-
           sortedEvals.forEach(log => {
             if (log.metrics[key]) {
               const val = log.metrics[key].score || log.metrics[key].value;
@@ -580,7 +891,6 @@
           if(dataPoints.length === 0) return alert('No history available for this metric yet.');
 
           this.activeMetricModal = true;
-          
           setTimeout(() => {
             if(this.chartInstance) this.chartInstance.destroy();
             const ctx = document.getElementById('metricHistoryChart').getContext('2d');
