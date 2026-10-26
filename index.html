@@ -845,7 +845,8 @@
                 this.athletes.push({
                   id: ath.id,
                   name: ath.name,
-                  initials: ath.initials,
+                  // Dynamically calculate initials based on the name from the DB
+                  initials: ath.name ? ath.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U',
                   highSchool: ath.high_school,
                   state: ath.state,
                   position: ath.position,
@@ -865,7 +866,6 @@
           const testAth = {
             id: 'ATH-1',
             name: 'DeAndre Carter',
-            initials: 'DC',
             high_school: 'Saguaro HS',
             state: 'AZ',
             position: 'WR',
@@ -1018,7 +1018,6 @@
           const newDbAth = {
             id: athleteId,
             name: `${this.newAthleteForm.firstName} ${this.newAthleteForm.lastName}`,
-            initials: this.newAthleteForm.firstName[0] + this.newAthleteForm.lastName[0],
             position: this.newAthleteForm.position,
             high_school: this.newAthleteForm.highSchool,
             state: 'AZ',
