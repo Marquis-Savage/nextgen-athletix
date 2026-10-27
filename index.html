@@ -844,9 +844,9 @@
 
                 this.athletes.push({
                   id: ath.id,
-                  name: ath.name,
-                  // Dynamically calculate initials based on the name from the DB
-                  initials: ath.name ? ath.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U',
+                  // Map database first/last name to the singular UI name property
+                  name: `${ath.first_name || ''} ${ath.last_name || ''}`.trim(),
+                  initials: ((ath.first_name?.[0]||'') + (ath.last_name?.[0]||'')).toUpperCase() || 'U',
                   highSchool: ath.high_school,
                   state: ath.state,
                   position: ath.position,
@@ -865,7 +865,8 @@
         async seedInitialAthlete() {
           const testAth = {
             id: 'ATH-1',
-            name: 'DeAndre Carter',
+            first_name: 'DeAndre',
+            last_name: 'Carter',
             high_school: 'Saguaro HS',
             state: 'AZ',
             position: 'WR',
@@ -1017,7 +1018,9 @@
           const athleteId = 'ATH-' + Date.now();
           const newDbAth = {
             id: athleteId,
-            name: `${this.newAthleteForm.firstName} ${this.newAthleteForm.lastName}`,
+            // Submits first_name and last_name exactly as your Supabase table expects
+            first_name: this.newAthleteForm.firstName,
+            last_name: this.newAthleteForm.lastName,
             position: this.newAthleteForm.position,
             high_school: this.newAthleteForm.highSchool,
             state: 'AZ',
