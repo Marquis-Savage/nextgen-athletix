@@ -581,7 +581,8 @@
                     <option value="S">Safety</option><option value="K">Kicker</option><option value="P">Punter</option><option value="LS">Long Snapper</option>
                   </select>
                 </div>
-                <div><label class="text-xs font-bold text-slate-500 uppercase">High School</label><input type="text" x-model="newAthleteForm.highSchool" required class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
+                <div><label class="text-xs font-bold text-slate-500 uppercase">City</label><input type="text" x-model="newAthleteForm.city" required placeholder="e.g. Scottsdale" class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
+                <div class="col-span-2"><label class="text-xs font-bold text-slate-500 uppercase">High School</label><input type="text" x-model="newAthleteForm.highSchool" required class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs"></div>
                 
                 <div class="col-span-2">
                   <label class="text-xs font-bold text-slate-500 uppercase">Profile Photo (Direct Upload)</label>
@@ -780,7 +781,7 @@
         sponsorForm: { orgName: '', contactName: '', contactInfo: '', tier: 'Tier 1', additionalInfo: '' },
         
         evalMode: 'scouting',
-        newAthleteForm: { firstName: '', lastName: '', position: 'WR', highSchool: '' },
+        newAthleteForm: { firstName: '', lastName: '', position: 'WR', city: '', highSchool: '' },
         evalForm: { athleteId: '', scouting: {}, physical: {}, anthro: {} },
         galleryForm: { athleteId: '', title: '' },
 
@@ -847,6 +848,7 @@
                   name: `${ath.first_name || ''} ${ath.last_name || ''}`.trim(),
                   initials: ((ath.first_name?.[0]||'') + (ath.last_name?.[0]||'')).toUpperCase() || 'U',
                   highSchool: ath.high_school,
+                  city: ath.city,
                   state: ath.state,
                   position: ath.position,
                   photoUrl: ath.photo_url,
@@ -867,6 +869,7 @@
             id: testId,
             first_name: 'DeAndre',
             last_name: 'Carter',
+            city: 'Scottsdale',
             high_school: 'Saguaro HS',
             state: 'AZ',
             position: 'WR',
@@ -1015,13 +1018,13 @@
             uploadedUrl = await this.uploadFileToSupabase(photoInput.files[0]);
           }
 
-          // Generates a valid UUID compatible with Supabase uuid column type
           const athleteId = crypto.randomUUID();
           const newDbAth = {
             id: athleteId,
             first_name: this.newAthleteForm.firstName,
             last_name: this.newAthleteForm.lastName,
             position: this.newAthleteForm.position,
+            city: this.newAthleteForm.city,
             high_school: this.newAthleteForm.highSchool,
             state: 'AZ',
             photo_url: uploadedUrl
@@ -1031,7 +1034,7 @@
           if (error) { alert('Error creating athlete: ' + error.message); return; }
 
           alert('Profile Created Successfully in Database!');
-          this.newAthleteForm = { firstName: '', lastName: '', position: 'WR', highSchool: '' };
+          this.newAthleteForm = { firstName: '', lastName: '', position: 'WR', city: '', highSchool: '' };
           if(photoInput) photoInput.value = "";
           await this.loadAthletesFromDatabase();
         },
