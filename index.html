@@ -58,38 +58,46 @@
       </div>
 
       <!-- Main Navigation -->
-      <nav class="flex flex-wrap items-center justify-center gap-2 w-full lg:w-auto">
-        <button type="button" @click="setView('home')" :class="currentView === 'home' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
+      <nav class="flex flex-wrap items-center justify-center gap-1.5 w-full lg:w-auto">
+        <button type="button" @click="setView('home')" :class="currentView === 'home' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1">
           <i data-lucide="home" class="w-3.5 h-3.5"></i><span>Home</span>
         </button>
 
-        <button type="button" @click="setView('search')" :class="currentView === 'search' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
-          <i data-lucide="database" class="w-3.5 h-3.5"></i><span>Athlete Database</span>
+        <button type="button" @click="setView('search')" :class="currentView === 'search' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1">
+          <i data-lucide="database" class="w-3.5 h-3.5"></i><span>Database</span>
         </button>
 
-        <button type="button" @click="setView('vp_directory')" :class="currentView === 'vp_directory' || currentView === 'vp_profile_view' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
-          <i data-lucide="users" class="w-3.5 h-3.5 text-emerald-600"></i><span>Verified Personnel Directory</span>
+        <button type="button" @click="setView('vp_directory')" :class="currentView === 'vp_directory' || currentView === 'vp_profile_view' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1">
+          <i data-lucide="users" class="w-3.5 h-3.5 text-emerald-600"></i><span>Personnel</span>
+        </button>
+
+        <button type="button" @click="setView('sponsors_directory')" :class="currentView === 'sponsors_directory' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1">
+          <i data-lucide="award" class="w-3.5 h-3.5 text-amber-500"></i><span>Sponsors</span>
         </button>
         
-        <button type="button" @click="setView('stats')" :class="currentView === 'stats' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
-          <i data-lucide="bar-chart" class="w-3.5 h-3.5 text-amber-500"></i><span>External Stats</span>
+        <button type="button" @click="setView('stats')" :class="currentView === 'stats' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1">
+          <i data-lucide="bar-chart" class="w-3.5 h-3.5 text-amber-500"></i><span>Stats</span>
         </button>
 
-        <button type="button" @click="setView('sponsor')" :class="currentView === 'sponsor' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
-          <i data-lucide="award" class="w-3.5 h-3.5 text-amber-500"></i><span>Become a Sponsor</span>
+        <button type="button" @click="setView('sponsor')" :class="currentView === 'sponsor' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1">
+          <i data-lucide="star" class="w-3.5 h-3.5 text-amber-500"></i><span>Become Sponsor</span>
         </button>
 
-        <button type="button" @click="setView('vp_portal')" :class="currentView === 'vp_portal' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
+        <button type="button" @click="setView('vp_portal')" :class="currentView === 'vp_portal' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1">
           <i data-lucide="user-check" class="w-3.5 h-3.5 text-indigo-600"></i><span>VP Portal</span>
         </button>
 
+        <button type="button" @click="setView('contact')" :class="currentView === 'contact' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1">
+          <i data-lucide="mail" class="w-3.5 h-3.5 text-indigo-600"></i><span>Contact</span>
+        </button>
+
         <template x-if="currentUser && currentUser.role === 'admin'">
-          <button type="button" @click="setView('admin')" :class="currentView === 'admin' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
+          <button type="button" @click="setView('admin')" :class="currentView === 'admin' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1">
             <i data-lucide="shield" class="w-3.5 h-3.5 text-rose-600"></i><span>Admin</span>
           </button>
         </template>
 
-        <button type="button" @click="setView('about')" :class="currentView === 'about' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
+        <button type="button" @click="setView('about')" :class="currentView === 'about' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1">
           <i data-lucide="info" class="w-3.5 h-3.5"></i><span>About</span>
         </button>
       </nav>
@@ -309,6 +317,73 @@
       </div>
     </div>
 
+    <!-- VIEW: SPONSORS & PARTNERS DIRECTORY -->
+    <div x-show="currentView === 'sponsors_directory'" x-cloak class="space-y-10">
+      <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-3xl p-8 sm:p-12 shadow-xl">
+        <span class="px-3 py-1 bg-white/20 border border-white/30 text-white text-xs font-extrabold rounded-full uppercase tracking-wider inline-block mb-3">Valued Network Partners</span>
+        <h1 class="text-3xl sm:text-4xl font-black tracking-tight">Sponsors & Partners Directory</h1>
+        <p class="text-amber-100 text-sm mt-2 max-w-2xl">We proudly recognize and thank the training academies, medical providers, and athletic brands supporting youth to college football intelligence.</p>
+      </div>
+
+      <!-- Tier 3 Partners -->
+      <div class="space-y-4">
+        <div class="flex items-center space-x-2 border-b border-slate-200 pb-2">
+          <i data-lucide="award" class="w-5 h-5 text-amber-500"></i>
+          <h2 class="text-lg font-black text-slate-900">Tier 3 • Elite National Title Partners</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-white border-2 border-amber-300 rounded-2xl p-6 shadow-sm flex items-center space-x-4">
+             <div class="w-16 h-16 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center font-black text-xl shrink-0">NGA</div>
+             <div>
+               <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded uppercase">National Partner</span>
+               <h3 class="font-black text-slate-900 text-lg mt-1">Apex Athletic Performance</h3>
+               <p class="text-xs text-slate-500 mt-0.5">Official Strength & Conditioning Partner</p>
+             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tier 2 Partners -->
+      <div class="space-y-4">
+        <div class="flex items-center space-x-2 border-b border-slate-200 pb-2">
+          <i data-lucide="star" class="w-5 h-5 text-indigo-600"></i>
+          <h2 class="text-lg font-black text-slate-900">Tier 2 • State Showcase Sponsors</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+             <span class="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded uppercase">State Sponsor</span>
+             <h3 class="font-black text-slate-900 text-base mt-2">Desert State Sports Med</h3>
+             <p class="text-xs text-slate-500 mt-1">Injury Prevention & Rehab</p>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+             <span class="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded uppercase">State Sponsor</span>
+             <h3 class="font-black text-slate-900 text-base mt-2">Gridiron 7v7 Academy</h3>
+             <p class="text-xs text-slate-500 mt-1">Elite Off-Season Training</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tier 1 Partners -->
+      <div class="space-y-4">
+        <div class="flex items-center space-x-2 border-b border-slate-200 pb-2">
+          <i data-lucide="shield" class="w-5 h-5 text-emerald-600"></i>
+          <h2 class="text-lg font-black text-slate-900">Tier 1 • Local Supporter Partners</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+             <span class="text-[9px] font-bold text-emerald-600 uppercase block">Local Partner</span>
+             <h4 class="font-bold text-slate-900 text-sm mt-1">Scottsdale Speed Lab</h4>
+             <p class="text-[11px] text-slate-500">Physical Decal Holder</p>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+             <span class="text-[9px] font-bold text-emerald-600 uppercase block">Local Partner</span>
+             <h4 class="font-bold text-slate-900 text-sm mt-1">Valley QB Mechanics</h4>
+             <p class="text-[11px] text-slate-500">Physical Decal Holder</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- VIEW: INDIVIDUAL VP PROFILE (PUBLIC) -->
     <div x-show="currentView === 'vp_profile_view'" x-cloak class="max-w-3xl mx-auto space-y-6" x-if="selectedVp">
       <button @click="setView('vp_directory')" class="text-xs font-bold text-slate-500 hover:text-indigo-600 flex items-center space-x-1"><i data-lucide="arrow-left" class="w-4 h-4"></i><span>Back to Directory</span></button>
@@ -378,30 +453,69 @@
         </p>
       </div>
 
+      <!-- Tiers Grid -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm space-y-3">
-          <span class="text-xs font-bold text-indigo-600 uppercase">Tier 1</span>
-          <h3 class="font-black text-slate-900 text-lg">Local Academy Partner</h3>
-          <p class="text-xs text-slate-500 leading-relaxed">Ideal for local training facilities, speed coaches, and equipment suppliers targeting regional youth athletes.</p>
+        <!-- Tier 1 -->
+        <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm space-y-4 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-bold text-emerald-600 uppercase">Tier 1</span>
+              <span class="text-lg font-black text-slate-900">$200</span>
+            </div>
+            <h3 class="font-black text-slate-900 text-lg mb-2">Local Supporter Partner</h3>
+            <p class="text-xs text-slate-500 leading-relaxed mb-4">Ideal for local training facilities, speed coaches, and equipment suppliers.</p>
+            <ul class="space-y-2 text-xs text-slate-700">
+              <li class="flex items-center space-x-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i><span>Physical & Digital Window Decal</span></li>
+              <li class="flex items-center space-x-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i><span>Directory recognition on site</span></li>
+              <li class="flex items-center space-x-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i><span>Community launch shoutout</span></li>
+            </ul>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 block pt-4 border-t">Valid for 365 Days</span>
         </div>
-        <div class="bg-white border border-indigo-300 ring-2 ring-indigo-500/20 p-6 rounded-2xl shadow-sm space-y-3 relative">
-          <span class="text-xs font-bold text-amber-600 uppercase">Tier 2 • Most Popular</span>
-          <h3 class="font-black text-slate-900 text-lg">State Showcase Sponsor</h3>
-          <p class="text-xs text-slate-500 leading-relaxed">Prominent placement across state athlete search queries and high school combine leaderboards.</p>
+
+        <!-- Tier 2 -->
+        <div class="bg-white border-2 border-indigo-300 ring-2 ring-indigo-500/10 p-6 rounded-2xl shadow-sm space-y-4 flex flex-col justify-between relative">
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-bold text-indigo-600 uppercase">Tier 2 • Popular</span>
+              <span class="text-lg font-black text-slate-900">$350</span>
+            </div>
+            <h3 class="font-black text-slate-900 text-lg mb-2">State Showcase Sponsor</h3>
+            <p class="text-xs text-slate-500 leading-relaxed mb-4">Prominent placement across state athlete search queries and regional showcases.</p>
+            <ul class="space-y-2 text-xs text-slate-700">
+              <li class="flex items-center space-x-2"><i data-lucide="check" class="w-4 h-4 text-indigo-600"></i><span>Everything in Tier 1</span></li>
+              <li class="flex items-center space-x-2"><i data-lucide="check" class="w-4 h-4 text-indigo-600"></i><span>Top & center homepage recognition</span></li>
+              <li class="flex items-center space-x-2"><i data-lucide="check" class="w-4 h-4 text-indigo-600"></i><span>Search query & combine flyer integration</span></li>
+            </ul>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 block pt-4 border-t">Valid for 365 Days</span>
         </div>
-        <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm space-y-3">
-          <span class="text-xs font-bold text-emerald-600 uppercase">Tier 3</span>
-          <h3 class="font-black text-slate-900 text-lg">National Title Partner</h3>
-          <p class="text-xs text-slate-500 leading-relaxed">Exclusive brand integration on national leaderboards, news feeds, and scout report headers.</p>
+
+        <!-- Tier 3 -->
+        <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm space-y-4 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-bold text-amber-600 uppercase">Tier 3</span>
+              <span class="text-lg font-black text-slate-900">$600</span>
+            </div>
+            <h3 class="font-black text-slate-900 text-lg mb-2">Elite National Title Partner</h3>
+            <p class="text-xs text-slate-500 leading-relaxed mb-4">Maximum exposure across the entire platform ecosystem.</p>
+            <ul class="space-y-2 text-xs text-slate-700">
+              <li class="flex items-center space-x-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i><span>Everything in Tiers 1 & 2</span></li>
+              <li class="flex items-center space-x-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i><span>Top & center placement on ALL pages</span></li>
+              <li class="flex items-center space-x-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i><span>Scouting reports, emails & newsletters</span></li>
+              <li class="flex items-center space-x-2"><i data-lucide="check" class="w-4 h-4 text-amber-600"></i><span>Position naming rights & editorial feature</span></li>
+            </ul>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 block pt-4 border-t">Valid for 548 Days</span>
         </div>
       </div>
 
+      <!-- Sponsor Form -->
       <div class="bg-white border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-sm">
-        <div class="flex items-center justify-between mb-6">
-           <h3 class="text-xl font-bold text-slate-900">Submit Sponsorship Inquiry</h3>
-        </div>
+        <h3 class="text-xl font-bold text-slate-900 mb-2">Submit Sponsorship Inquiry</h3>
         <p class="text-xs text-slate-500 mb-6 bg-slate-50 p-3 rounded border border-slate-200">
-           Tier 1 & 2 sponsorships are valid for 365 days from the date of donation. Tier 3 sponsorships are valid for 548 days. Admin will review and reach out to you directly regarding your inquiry.
+           Admin will review your inquiry and reach out directly with payment and decal delivery details.
         </p>
         <form @submit.prevent="submitSponsorForm()" class="space-y-4">
           <div class="grid grid-cols-2 gap-4">
@@ -413,14 +527,50 @@
              <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Interested Tier</label>
                 <select x-model="sponsorForm.tier" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
-                   <option value="Tier 1">Tier 1 - Local Academy Partner</option>
-                   <option value="Tier 2">Tier 2 - State Showcase Sponsor</option>
-                   <option value="Tier 3">Tier 3 - National Title Partner</option>
+                   <option value="Tier 1 ($200)">Tier 1 - Local Supporter Partner ($200)</option>
+                   <option value="Tier 2 ($350)">Tier 2 - State Showcase Sponsor ($350)</option>
+                   <option value="Tier 3 ($600)">Tier 3 - Elite National Title Partner ($600)</option>
                 </select>
              </div>
           </div>
           <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Additional Info for Admin</label><textarea x-model="sponsorForm.additionalInfo" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800" placeholder="Optional context or questions..."></textarea></div>
           <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">Submit Inquiry to Founder</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- VIEW: CONTACT US -->
+    <div x-show="currentView === 'contact'" x-cloak class="max-w-3xl mx-auto space-y-8">
+      <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
+        <h1 class="text-3xl font-black text-slate-900 mb-2">Contact Us</h1>
+        <p class="text-xs text-slate-500 mb-6">Have questions, comments, concerns, or complaints? Reach out directly and our administrative team will get back to you promptly.</p>
+        
+        <form @submit.prevent="submitContactForm()" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Your Name</label>
+              <input type="text" x-model="contactForm.name" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email Address</label>
+              <input type="email" x-model="contactForm.email" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Inquiry Type</label>
+            <select x-model="contactForm.type" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs font-bold">
+              <option value="Question">Question</option>
+              <option value="Comment">Comment</option>
+              <option value="Concern">Concern</option>
+              <option value="Complaint">Complaint</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Message</label>
+            <textarea x-model="contactForm.message" rows="5" required placeholder="Type your message here..." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs"></textarea>
+          </div>
+          <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition">Send Message</button>
         </form>
       </div>
     </div>
@@ -826,7 +976,8 @@
 
         authForm: { email: '', password: '', fullName: '', orgName: '', phone: '' },
         vpProfileForm: { name: '', org: '', phone: '', bio: '', photoUrl: '', isPrivate: false },
-        sponsorForm: { orgName: '', contactName: '', contactInfo: '', tier: 'Tier 1', additionalInfo: '' },
+        sponsorForm: { orgName: '', contactName: '', contactInfo: '', tier: 'Tier 1 ($200)', additionalInfo: '' },
+        contactForm: { name: '', email: '', type: 'Question', message: '' },
         
         evalMode: 'scouting',
         newAthleteForm: { firstName: '', lastName: '', position: 'WR', classYear: '2027', city: '', state: 'AZ', highSchool: '' },
@@ -1053,7 +1204,12 @@
 
         submitSponsorForm() {
           alert('Inquiry Submitted! Admin will review your request and reach out directly.');
-          this.sponsorForm = { orgName: '', contactName: '', contactInfo: '', tier: 'Tier 1', additionalInfo: '' };
+          this.sponsorForm = { orgName: '', contactName: '', contactInfo: '', tier: 'Tier 1 ($200)', additionalInfo: '' };
+        },
+
+        submitContactForm() {
+          alert('Thank you! Your message has been sent to the NextGen Athletix administrative team.');
+          this.contactForm = { name: '', email: '', type: 'Question', message: '' };
         },
 
         setView(view) { 
