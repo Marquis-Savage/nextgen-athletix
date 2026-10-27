@@ -651,11 +651,11 @@
                  </div>
                  <div>
                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Media Caption / Title</label>
-                   <input type="text" x-model="galleryForm.title" placeholder="e.g. 2026 State Championship Highlights" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs">
+                   <input type="text" x-model="galleryForm.title" placeholder="e.g. 2026 State Championship Highlights" required class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs">
                  </div>
                  <div>
                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Upload Photo / Video</label>
-                   <input type="file" id="galleryUploadInput" accept="image/*,video/*" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs">
+                   <input type="file" id="galleryUploadInput" accept="image/*,video/*" required class="w-full bg-slate-50 border rounded-lg p-2.5 text-xs">
                  </div>
                  <button type="submit" class="w-full py-3 bg-indigo-600 text-white font-bold text-xs rounded-xl shadow-md">Publish to Gallery</button>
                </form>
@@ -844,7 +844,6 @@
 
                 this.athletes.push({
                   id: ath.id,
-                  // Map database first/last name to the singular UI name property
                   name: `${ath.first_name || ''} ${ath.last_name || ''}`.trim(),
                   initials: ((ath.first_name?.[0]||'') + (ath.last_name?.[0]||'')).toUpperCase() || 'U',
                   highSchool: ath.high_school,
@@ -863,8 +862,9 @@
         },
 
         async seedInitialAthlete() {
+          const testId = crypto.randomUUID();
           const testAth = {
-            id: 'ATH-1',
+            id: testId,
             first_name: 'DeAndre',
             last_name: 'Carter',
             high_school: 'Saguaro HS',
@@ -874,7 +874,7 @@
           };
           await window.db.from('athletes').insert([testAth]);
           await window.db.from('evaluations').insert([{
-            athlete_id: 'ATH-1',
+            athlete_id: testId,
             date: '2026-09-01',
             evaluator: 'Coach Vance',
             metrics: { 'Route Running': { score: 94 }, 'forty': { value: '4.42', media: '' } }
@@ -1015,10 +1015,10 @@
             uploadedUrl = await this.uploadFileToSupabase(photoInput.files[0]);
           }
 
-          const athleteId = 'ATH-' + Date.now();
+          // Generates a valid UUID compatible with Supabase uuid column type
+          const athleteId = crypto.randomUUID();
           const newDbAth = {
             id: athleteId,
-            // Submits first_name and last_name exactly as your Supabase table expects
             first_name: this.newAthleteForm.firstName,
             last_name: this.newAthleteForm.lastName,
             position: this.newAthleteForm.position,
